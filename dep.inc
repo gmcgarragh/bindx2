@@ -39,6 +39,6 @@ bindx_yylex_int.o: bindx_yylex_int.c bindx_parse.h bindx_util.h \
  prototypes/bindx_util_p.h prototypes/bindx_parse_p.h bindx_parse_int.h \
  prototypes/bindx_parse_int_p.h
 gindex_name_value.o: gindex_name_value.c gutil.h gindex_name_value.h
-glist.o: glist.c
+glist.o: glist.c gutil.h glist.h
 gutil_error.o: gutil_error.c gutil.h
 gutil_string.o: gutil_string.c gutil.h
