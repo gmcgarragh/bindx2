@@ -360,10 +360,10 @@ int tokenize(char *line, char **tokens, char *delim) {
 
      lasts = NULL;
 
-     if ((tokens[i++] = gtrtok_r(line, delim, &lasts)) == '\0')
+     if ((tokens[i++] = gtrtok_r(line, delim, &lasts)) == NULL)
           return 0;
 
-     while((curtok = gtrtok_r(NULL, delim, &lasts)) != '\0')
+     while((curtok = gtrtok_r(NULL, delim, &lasts)) != NULL)
           tokens[i++] = curtok;
 
      return i;

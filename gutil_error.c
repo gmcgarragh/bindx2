@@ -54,7 +54,7 @@ int strtoi_errmsg(const char *string, const char *name, int *value) {
           return -1;
      }
 
-     if (string == '\0') {
+     if (string == NULL) {
           fprintf(stderr, "ERROR: invalid value for %s: empty string\n", name);
           return -1;
      }
@@ -110,7 +110,7 @@ long strtol_errmsg(const char *string, const char *name, long *value) {
           exit(1);
      }
 
-     if (string == '\0') {
+     if (string == NULL) {
           fprintf(stderr, "ERROR: invalid value for %s: empty string\n", name);
           exit(1);
      }
@@ -166,7 +166,7 @@ double strtod_errmsg(const char *string, const char *name, double *value) {
           exit(1);
      }
 
-     if (string == '\0') {
+     if (string == NULL) {
           fprintf(stderr, "ERROR: invalid value for %s: empty string\n", name);
           exit(1);
      }
