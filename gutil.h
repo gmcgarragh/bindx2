@@ -976,28 +976,6 @@ int ncscmp(const void *, const void *);
 int ncsncmp(const void *, const void *, int);
 void strtolower(const char *, char *);
 void strtoupper(const char *, char *);
-void extract_array_1d(uchar *, void *, int, int, int);
-void extract_array_2d(uchar *, void **, int, int, int);
-void extract_c_array_1d(uchar *, char *, int, int, int);
-void extract_c_array_2d(uchar *, char **, int, int, int);
-void extract_uc_array_1d(uchar *, uchar *, int, int, int);
-void extract_uc_array_2d(uchar *, uchar **, int, int, int);
-void extract_int(uchar *, int *, int, int, int);
-void extract_long(uchar *, long *, int, int, int);
-void extract_float(uchar *, float *, int, int, int);
-void extract_double(uchar *, double *, int, int, int);
-void insert_array_1d(uchar *, void *, int, int, int);
-void insert_array_2d(uchar *, void **, int, int, int);
-void insert_c_array_1d(uchar *s, char *, int j, int, int);
-void insert_c_array_2d(uchar *s, char **, int, int, int);
-void insert_uc_array_1d(uchar *s, uchar *, int, int, int);
-void insert_uc_array_2d(uchar *s, uchar **, int, int, int);
-void insert_int(uchar *, int *, int, int, int);
-void insert_long(uchar *, long *, int, int, int);
-void insert_float(uchar *, float *, int, int, int, int);
-void insert_double(uchar *, double *, int, int, int, int);
-void insert_scientific_e(uchar *, double *, int, int, int, int);
-void insert_scientific_E(uchar *, double *, int, int, int, int);
 
 
 /* **** gutil_struct.c **** */
