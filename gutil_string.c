@@ -10,9 +10,6 @@
 #include "gutil.h"
 
 
-#define EXT_BUF 256
-
-
 void str_replace_char(char *s, char c1, char c2) {
 
      while ((s = strchr(s+1, c1)))
@@ -383,58 +380,6 @@ char *remove_pad(char *s, int side) {
           for (i = strlen(s) - 1; s[i] == ' '; --i) ;
           s[i+1] = '\0';
      }
-
-     return s;
-}
-
-
-
-char *int_to_string(int i, char *s) {
-
-     sprintf(s, "%d", i);
-
-     return s;
-}
-
-
-
-char *uint_to_string(uint ui, char *s) {
-
-     sprintf(s, "%u", ui);
-
-     return s;
-}
-
-
-
-char *long_to_string(long l, char *s) {
-
-     sprintf(s, "%ld", l);
-
-     return s;
-}
-
-
-
-char *ulong_to_string(ulong ul, char *s) {
-
-     sprintf(s, "%lu", ul);
-
-     return s;
-}
-
-
-char *float_to_string(float f, char *s) {
-
-     sprintf(s, "%f", f);
-
-     return s;
-}
-
-
-char *double_to_string(double d, char *s) {
-
-     sprintf(s, "%f", d);
 
      return s;
 }
