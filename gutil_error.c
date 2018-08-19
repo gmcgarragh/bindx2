@@ -1,6 +1,6 @@
 /*******************************************************************************
 **
-**    Copyright (C) 1998-2018 Greg McGarragh <gregm@atmos.colostate.edu>
+**    Copyright (C) 1998-2018 Greg McGarragh <greg.mcgarragh@colostate.edu>
 **
 **    This source code is licensed under the GNU General Public License (GPL),
 **    Version 3.  See the file COPYING for more details.
