@@ -542,11 +542,11 @@ void bindx_parse(bindx_data *d, locus_data *locus)
 void bindx_finialize(bindx_data *d)
 {
      if (list_is_empty(&d->subs_init)) {
-          eprintf("ERROR: an init subprogram has not been defined");
+          fprintf(stderr, "ERROR: an init subprogram has not been defined");
           exit(1);
      }
      if (list_is_empty(&d->subs_free)) {
-          eprintf("ERROR: an free subprogram has not been defined");
+          fprintf(stderr, "ERROR: an free subprogram has not been defined");
           exit(1);
      }
 }

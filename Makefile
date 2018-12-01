@@ -10,6 +10,8 @@
 
 include make.inc
 
+INCDIRS += -I.
+
 OBJECTS = bindx.o \
           bindx_c.o \
           bindx_cpp.o \
@@ -48,7 +50,7 @@ clean:
 	rm -f *.o bindx $(EXTRA_CLEANS)
 
 .c.o:
-	$(CC) $(CCFLAGS) $(INCDIRS) -I. -c -o $*.o $<
+	$(CC) $(CCFLAGS) $(INCDIRS) -c -o $*.o $<
 
 # Requires gcc
 depend:

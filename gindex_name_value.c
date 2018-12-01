@@ -39,7 +39,7 @@ int max_name_length(const char **names, int n) {
 const char *index_to_name(int index, const char **names, int n, const char *desc) {
 
      if (index < 0 || index >= n) {
-          eprintf("ERROR: invalid %s index: %d\n", desc, index);
+          fprintf(stderr, "ERROR: invalid %s index: %d\n", desc, index);
           return NULL;
      }
 
@@ -58,7 +58,7 @@ int name_to_index(const char *name, const char **names, int n, const char *desc)
           }
      }
 
-     eprintf("ERROR: invalid %s name: %s\n", desc, name);
+     fprintf(stderr, "ERROR: invalid %s name: %s\n", desc, name);
 
      return -1;
 }
@@ -71,7 +71,7 @@ int name_to_index(const char *name, const char **names, int n, const char *desc)
 long index_to_value(int index, long *values, int n, const char *desc) {
 
      if (index < 0 || index >= n) {
-          eprintf("ERROR: invalid %s index: %d\n", desc, index);
+          fprintf(stderr, "ERROR: invalid %s index: %d\n", desc, index);
           return -1;
      }
 
@@ -89,7 +89,7 @@ int value_to_index(long value, long *values, int n, const char *desc) {
                return i;
      }
 
-     eprintf("ERROR: invalid %s value: %d\n", desc, value);
+     fprintf(stderr, "ERROR: invalid %s value: %ld\n", desc, value);
 
      return -1;
 }
@@ -128,7 +128,7 @@ long name_to_value(const char *name, long *values, const char **names, int n, co
                return values[i];
      }
 
-     eprintf("ERROR: invalid %s name: %s\n", desc, name);
+     fprintf(stderr, "ERROR: invalid %s name: %s\n", desc, name);
 
      return -1;
 }
@@ -144,7 +144,7 @@ const char *value_to_name(long value, long *values, const char **names, int n, c
                return names[i];
      }
 
-     eprintf("ERROR: invalid %s value: %d\n", desc, value);
+     fprintf(stderr, "ERROR: invalid %s value: %ld\n", desc, value);
 
      return NULL;
 }
@@ -190,7 +190,7 @@ long name_list_to_mask(char *s, long *values, const char **names, int n, const c
      if ((token = strtok_r(s, ", \t", &lasts))) {
           do {
                if ((temp = name_to_value(token, values, names, n, desc)) < 0) {
-                    eprintf("ERROR: name_to_value()\n");
+                    fprintf(stderr, "ERROR: name_to_value()\n");
                     return -1;
                }
                mask |= temp;

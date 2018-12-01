@@ -515,3 +515,337 @@ void strtoupper(const char *s1, char *s2) {
 
      *s2 = '\0';
 }
+
+
+#define EXT_BUF 256
+
+
+void extract_array_1d(uchar *s, void *v, int j, int size, int n) {
+
+     uchar *uc;
+
+     int i, k, l;
+
+     uc = (uchar *) v;
+
+     k = 0;
+     for (i = 0; i < n; ++i)
+          for (l = 0; l < size; ++l)
+               uc[k++] = s[j++];
+}
+
+
+
+void extract_array_2d(uchar *s, void **v, int j, int size, int n) {
+
+     uchar **uc;
+
+     int i, k;
+
+     uc = (uchar **) v;
+
+     for (i = 0; i < n; ++i)
+          for (k = 0; k < size; ++k)
+               uc[i][k] = s[j++];
+}
+
+
+
+void extract_c_array_1d(uchar *s, char *c, int j, int size, int n) {
+
+     int i, k, l;
+
+     k = 0;
+     for (i = 0; i < n; ++i)
+          for (l = 0; l < size; ++l)
+               c[k++] = s[j++];
+}
+
+
+
+void extract_c_array_2d(uchar *s, char **c, int j, int size, int n) {
+
+     int i, k;
+
+     for (i = 0; i < n; ++i)
+          for (k = 0; k < size; ++k)
+               c[i][k] = s[j++];
+}
+
+
+
+void extract_uc_array_1d(uchar *s, uchar *uc, int j, int size, int n) {
+
+     int i, k, l;
+
+     k = 0;
+     for (i = 0; i < n; ++i)
+          for (l = 0; l < size; ++l)
+               uc[k++] = s[j++];
+}
+
+
+
+void extract_uc_array_2d(uchar *s, uchar **uc, int j, int size, int n) {
+
+     int i, k;
+
+     for (i = 0; i < n; ++i)
+          for (k = 0; k < size; ++k)
+               uc[i][k] = s[j++];
+}
+
+
+
+void extract_int(uchar *s, int *a, int j, int size, int n) {
+
+     char temp[EXT_BUF];
+
+     int i, k;
+
+     for (i = 0; i < n; ++i) {
+          for (k = 0; k < size; ++k)
+               temp[k] = (char) s[j++];
+          temp[k] = '\0';
+          a[i] = atoi(temp);
+     }
+}
+
+
+
+void extract_long(uchar *s, long *a, int j, int size, int n) {
+
+     char temp[EXT_BUF];
+
+     int i, k;
+
+     for (i = 0; i < n; ++i) {
+          for (k = 0; k < size; ++k)
+               temp[k] = (char) s[j++];
+          temp[k] = '\0';
+          a[i] = atol(temp);
+     }
+}
+
+
+
+void extract_float(uchar *s, float *f, int j, int size, int n) {
+
+     char temp[EXT_BUF];
+
+     int i, k;
+
+     for (i = 0; i < n; ++i) {
+          for (k = 0; k < size; ++k)
+               temp[k] = (char) s[j++];
+          temp[k] = '\0';
+          f[i] = (float) atof(temp);
+     }
+}
+
+
+
+void extract_double(uchar *s, double *d, int j, int size, int n) {
+
+     char temp[EXT_BUF];
+
+     int i, k;
+
+     for (i = 0; i < n; ++i) {
+          for (k = 0; k < size; ++k)
+               temp[k] = (char) s[j++];
+          temp[k] = '\0';
+          d[i] = atof(temp);
+     }
+}
+
+
+
+void insert_array_1d(uchar *s, void *v, int j, int size, int n) {
+
+     uchar *uc;
+
+     int i, k, l;
+
+     uc = (uchar *) v;
+
+     k = 0;
+     for (i = 0; i < n; ++i)
+          for (l = 0; l < size; ++l)
+               s[j++] = uc[k++];
+}
+
+
+
+void insert_array_2d(uchar *s, void **v, int j, int size, int n) {
+
+     uchar **uc;
+
+     int i, k;
+
+     uc = (uchar **) v;
+
+     for (i = 0; i < n; ++i)
+          for (k = 0; k < size; ++k)
+               s[j++] = uc[i][k];
+}
+
+
+
+void insert_c_array_1d(uchar *s, char *c, int j, int size, int n) {
+
+     int i, k, l;
+
+     k = 0;
+     for (i = 0; i < n; ++i)
+          for (l = 0; l < size; ++l)
+               s[j++] = c[k++];
+}
+
+
+
+void insert_c_array_2d(uchar *s, char **c, int j, int size, int n) {
+
+     int i, k;
+
+     for (i = 0; i < n; ++i)
+          for (k = 0; k < size; ++k)
+               s[j++] = c[i][k];
+}
+
+
+
+void insert_uc_array_1d(uchar *s, uchar *uc, int j, int size, int n) {
+
+     int i, k, l;
+
+     k = 0;
+     for (i = 0; i < n; ++i)
+          for (l = 0; l < size; ++l)
+               s[j++] = uc[k++];
+}
+
+
+
+void insert_uc_array_2d(uchar *s, uchar **uc, int j, int size, int n) {
+
+     int i, k;
+
+     for (i = 0; i < n; ++i)
+          for (k = 0; k < size; ++k)
+               s[j++] = uc[i][k];
+}
+
+
+
+void insert_int(uchar *s, int *a, int start, int size, int n) {
+
+     char temp[EXT_BUF];
+
+     int i, j, k;
+
+     for (i = 0; i < n; ++i) {
+          sprintf(temp, "%*d", size, a[i]);
+
+          k = start+i*size;
+
+          for (j = 0; j < size; ++j) {
+               s[k++] = temp[j];
+          }
+     }
+}
+
+
+
+void insert_long(uchar *s, long *a, int start, int size, int n) {
+
+     char temp[EXT_BUF];
+
+     int i, j, k;
+
+     for (i = 0; i < n; ++i) {
+          sprintf(temp, "%*ld", size, a[i]);
+
+          k = start+i*size;
+
+          for (j = 0; j < size; ++j) {
+               s[k++] = temp[j];
+          }
+     }
+}
+
+
+
+void insert_float(uchar *s, float *f, int start, int size, int dec, int n) {
+
+     char temp[EXT_BUF];
+
+     int i, j, k;
+
+     for (i = 0; i < n; ++i) {
+          sprintf(temp, "%*.*f", size, dec, f[i]);
+
+          k = start+i*size;
+
+          for (j = 0; j < size; ++j) {
+               s[k++] = temp[j];
+          }
+     }
+}
+
+
+
+void insert_double(uchar *s, double *d, int start, int size, int dec, int n) {
+
+     char temp[EXT_BUF];
+
+     int i, j, k;
+
+     for (i = 0; i < n; ++i) {
+          sprintf(temp, "%*.*f", size, dec, d[i]);
+
+          k = start+i*size;
+
+          for (j = 0; j < size; ++j) {
+               s[k++] = temp[j];
+          }
+     }
+}
+
+
+
+void insert_scientific_e(uchar *s, double *e, int start, int size, int dec, int n) {
+
+     char temp[EXT_BUF];
+
+     int i, j, k;
+
+     for (i = 0; i < n; ++i) {
+          sprintf(temp, "%*.*e", size, dec, e[i]);
+
+          k = start+i*size;
+
+          for (j = 0; j < size; ++j) {
+               s[k++] = temp[j];
+          }
+     }
+}
+
+
+
+void insert_scientific_E(uchar *s, double *e, int start, int size, int dec, int n) {
+
+     char temp[EXT_BUF];
+
+     int i, j, k;
+
+     for (i = 0; i < n; ++i) {
+          sprintf(temp, "%*.*E", size, dec, e[i]);
+
+          k = start+i*size;
+
+          for (j = 0; j < size; ++j) {
+               s[k++] = temp[j];
+          }
+     }
+}

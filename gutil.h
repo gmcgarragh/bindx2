@@ -110,23 +110,6 @@ extern "C" {
 #endif
 
 
-/* Memory leak checking */
-#ifdef GMEM_CHECK
-
-#define malloc(x)	gmem_malloc(x, __FILE__, __LINE__)
-#define calloc(x, y)	gmem_calloc(x, y, __FILE__, __LINE__)
-#define realloc(x, y)	gmem_realloc(x, y, __FILE__, __LINE__)
-
-#ifdef strdup
-#undef strdup
-#endif
-#define strdup(x)	gmem_strdup(x, __FILE__, __LINE__)
-
-#define free(x)		gmem_free(x, __FILE__, __LINE__)
-
-#endif
-
-
 /* Data types */
 
 /*
@@ -703,25 +686,6 @@ size_t bread_order(void *, size_t, size_t, uchar *, int);
 size_t bwrite_order(void *, size_t, size_t, uchar *, int);
 
 
-/* **** gutil_check.c **** */
-
-void *gmalloc(size_t);
-void *gcalloc(size_t, size_t);
-void *grealloc(void *, size_t);
-void gmem_init(void);
-void gmem_uninit(void);
-void gmem_reset(void);
-void gmem_start(void);
-void gmem_stop(void);
-void *gmem_malloc(size_t, char *, int);
-void *gmem_calloc(size_t, size_t, char *, int);
-void *gmem_realloc(void *, size_t, char *, int);
-char *gmem_strdup(const char *, char *, int);
-void gmem_free(void *, char *, int);
-void gmem_tables(FILE *);
-void gmem_counts(FILE *);
-
-
 /* **** gutil_cmp.c **** */
 
 #define all_cmp_proto(postfix_, type_)			\
@@ -763,8 +727,6 @@ all_cmp_dec_proto(d,   double)
 
 
 /* **** gutil_error.c **** */
-
-void eprintf(const char *fmt, ...);
 
 void check_arg_count(int i, int argc, int n, const char *s);
 
@@ -976,6 +938,28 @@ int ncscmp(const void *, const void *);
 int ncsncmp(const void *, const void *, int);
 void strtolower(const char *, char *);
 void strtoupper(const char *, char *);
+void extract_array_1d(uchar *, void *, int, int, int);
+void extract_array_2d(uchar *, void **, int, int, int);
+void extract_c_array_1d(uchar *, char *, int, int, int);
+void extract_c_array_2d(uchar *, char **, int, int, int);
+void extract_uc_array_1d(uchar *, uchar *, int, int, int);
+void extract_uc_array_2d(uchar *, uchar **, int, int, int);
+void extract_int(uchar *, int *, int, int, int);
+void extract_long(uchar *, long *, int, int, int);
+void extract_float(uchar *, float *, int, int, int);
+void extract_double(uchar *, double *, int, int, int);
+void insert_array_1d(uchar *, void *, int, int, int);
+void insert_array_2d(uchar *, void **, int, int, int);
+void insert_c_array_1d(uchar *s, char *, int j, int, int);
+void insert_c_array_2d(uchar *s, char **, int, int, int);
+void insert_uc_array_1d(uchar *s, uchar *, int, int, int);
+void insert_uc_array_2d(uchar *s, uchar **, int, int, int);
+void insert_int(uchar *, int *, int, int, int);
+void insert_long(uchar *, long *, int, int, int);
+void insert_float(uchar *, float *, int, int, int, int);
+void insert_double(uchar *, double *, int, int, int, int);
+void insert_scientific_e(uchar *, double *, int, int, int, int);
+void insert_scientific_E(uchar *, double *, int, int, int, int);
 
 
 /* **** gutil_struct.c **** */
