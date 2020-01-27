@@ -139,7 +139,11 @@ static int write_utilities(FILE *fp, const bindx_data *d)
      fprintf(fp, "     *mask = 0;\n");
      fprintf(fp, "     n = PyList_Size(list);\n");
      fprintf(fp, "     for (i = 0; i < n; ++i) {\n");
+     fprintf(fp, "#if PY_MAJOR_VERSION < 3\n");
      fprintf(fp, "          r = name_to_mask(PyString_AsString(PyList_GetItem(list, i)));\n");
+     fprintf(fp, "#else\n");
+     fprintf(fp, "          r = name_to_mask(PyUnicode_AsUTF8 (PyList_GetItem(list, i)));\n");
+     fprintf(fp, "#endif\n");
      fprintf(fp, "          if (r < 0) {\n");
      fprintf(fp, "               format = \"ERROR: %%s()\";\n");
      fprintf(fp, "               error  = malloc(strlen(format) - 2 + strlen(name) + 1);\n");
@@ -168,7 +172,11 @@ static int write_utilities(FILE *fp, const bindx_data *d)
      fprintf(fp, "     *n = PyList_Size(list);\n");
      fprintf(fp, "     *array = malloc(*n * sizeof(int));\n");
      fprintf(fp, "     for (i = 0; i < *n; ++i) {\n");
+     fprintf(fp, "#if PY_MAJOR_VERSION < 3\n");
      fprintf(fp, "          r = name_to_value(PyString_AsString(PyList_GetItem(list, i)));\n");
+     fprintf(fp, "#else\n");
+     fprintf(fp, "          r = name_to_value(PyUnicode_AsUTF8 (PyList_GetItem(list, i)));\n");
+     fprintf(fp, "#endif\n");
      fprintf(fp, "          if (r < 0) {\n");
      fprintf(fp, "               format = \"ERROR: %%s()\";\n");
      fprintf(fp, "               error  = malloc(strlen(format) - 2 + strlen(name) + 1);\n");
@@ -461,8 +469,13 @@ static int write_subprograms(FILE *fp, const bindx_data *d,
           if (sub_type == SUBPROGRAM_TYPE_INIT)
                fprintf(fp, "%sreturn 0;\n", bxis(indent));
           else
-          if (sub_type == SUBPROGRAM_TYPE_FREE)
+          if (sub_type == SUBPROGRAM_TYPE_FREE) {
+               fprintf(fp, "#if PY_MAJOR_VERSION < 3\n");
                fprintf(fp, "%sself->ob_type->tp_free((PyObject *) self);\n", bxis(indent));
+               fprintf(fp, "#else\n");
+               fprintf(fp, "%s((PyObject*)(self))->ob_type->tp_free((PyObject *) self);\n", bxis(indent));
+               fprintf(fp, "#endif\n");
+          }
           else {
                if (subprogram->has_return_value)
                     fprintf(fp, "%sreturn Py_BuildValue(\"%s\", r);\n", bxis(indent), type_to_py_format(&subprogram->type, 0, 0));
@@ -507,8 +520,12 @@ int bindx_write_py(FILE **fp, const bindx_data *d, const char *name)
      bindx_write_c_header_top(fp[0]);
      fprintf(fp[0], "\n");
 
-     fprintf(fp[0], "#include <python2.7/Python.h>\n");
-     fprintf(fp[0], "#include <python2.7/structmember.h>\n");
+     fprintf(fp[0], "#include <Python.h>\n");
+     fprintf(fp[0], "#include <structmember.h>\n");
+     fprintf(fp[0], "#ifndef Py_USING_UNICODE\n");
+     fprintf(fp[0], "#define Py_USING_UNICODE\n");
+     fprintf(fp[0], "#endif\n");
+/*
      fprintf(fp[0], "#if NPY_FEATURE_VERSION < 0x00000007\n");
      fprintf(fp[0], "#define NPY_ARRAY_IN_ARRAY NPY_IN_ARRAY\n");
      fprintf(fp[0], "#define NPY_ARRAY_OUT_ARRAY NPY_OUT_ARRAY\n");
@@ -516,6 +533,7 @@ int bindx_write_py(FILE **fp, const bindx_data *d, const char *name)
      fprintf(fp[0], "#else\n");
      fprintf(fp[0], "#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION\n");
      fprintf(fp[0], "#endif\n");
+*/
      fprintf(fp[0], "#include <numpy/arrayobject.h>\n");
      fprintf(fp[0], "\n");
 
@@ -564,8 +582,12 @@ int bindx_write_py(FILE **fp, const bindx_data *d, const char *name)
      fprintf(fp[0], "\n");
 
      fprintf(fp[0], "static PyTypeObject %s_type = {\n", d->prefix);
+     fprintf(fp[0], "#if PY_MAJOR_VERSION < 3\n");
      fprintf(fp[0], "     PyObject_HEAD_INIT(NULL)\n");
      fprintf(fp[0], "     0,\n");						/* ob_size */
+     fprintf(fp[0], "#else\n");
+     fprintf(fp[0], "     PyVarObject_HEAD_INIT(NULL, 0)\n");
+     fprintf(fp[0], "#endif\n");
      fprintf(fp[0], "     \"%s.%s\",\n", d->prefix, d->prefix);			/* tp_name */
      fprintf(fp[0], "     sizeof(%s_data_py),\n", d->prefix);			/* tp_basicsize */
      fprintf(fp[0], "     0,\n");						/* tp_itemsize */
@@ -619,6 +641,23 @@ int bindx_write_py(FILE **fp, const bindx_data *d, const char *name)
      fprintf(fp[0], "\n");
      fprintf(fp[0], "\n");
 
+     fprintf(fp[0], "#if PY_MAJOR_VERSION >= 3\n");
+     fprintf(fp[0], "    static struct PyModuleDef module_def = {\n");
+     fprintf(fp[0], "        PyModuleDef_HEAD_INIT,\n");
+     fprintf(fp[0], "        \"%s\",\n", d->prefix);
+     fprintf(fp[0], "        \"Module for accessing %s\",\n", d->PREFIX);
+     fprintf(fp[0], "        -1,\n");
+     fprintf(fp[0], "        module_methods,\n");
+     fprintf(fp[0], "        NULL,\n");
+     fprintf(fp[0], "        NULL,\n");
+     fprintf(fp[0], "        NULL,\n");
+     fprintf(fp[0], "        NULL\n");
+     fprintf(fp[0], "    };\n");
+     fprintf(fp[0], "#endif\n");
+     fprintf(fp[0], "\n");
+     fprintf(fp[0], "\n");
+
+     fprintf(fp[0], "#if PY_MAJOR_VERSION < 3\n");
      fprintf(fp[0], "PyMODINIT_FUNC init%s(void)\n", d->prefix);
      fprintf(fp[0], "{\n");
      fprintf(fp[0], "     PyObject *module;\n");
@@ -634,7 +673,24 @@ int bindx_write_py(FILE **fp, const bindx_data *d, const char *name)
      fprintf(fp[0], "     PyModule_AddObject(module, \"error\", %sError);\n", d->PREFIX);
      fprintf(fp[0], "     import_array();\n");
      fprintf(fp[0], "}\n");
-     fprintf(fp[0], "\n");
+     fprintf(fp[0], "#else\n");
+     fprintf(fp[0], "PyMODINIT_FUNC PyInit_%s(void)\n", d->prefix);
+     fprintf(fp[0], "{\n");
+     fprintf(fp[0], "     PyObject *module;\n");
+     fprintf(fp[0], "     if (PyType_Ready(&%s_type) < 0)\n", d->prefix);
+     fprintf(fp[0], "          return NULL;\n");
+     fprintf(fp[0], "     module = PyModule_Create(&module_def);\n");
+     fprintf(fp[0], "     if (module == NULL)\n");
+     fprintf(fp[0], "          return NULL;\n");
+     fprintf(fp[0], "     Py_INCREF(&%s_type);\n", d->prefix);
+     fprintf(fp[0], "     PyModule_AddObject(module, \"%s\", (PyObject *) &%s_type);\n", d->prefix, d->prefix);
+     fprintf(fp[0], "     %sError = PyErr_NewException(\"%s.error\", NULL, NULL);\n", d->PREFIX, d->prefix);
+     fprintf(fp[0], "     Py_INCREF(%sError);\n", d->PREFIX);
+     fprintf(fp[0], "     PyModule_AddObject(module, \"error\", %sError);\n", d->PREFIX);
+     fprintf(fp[0], "     import_array();\n");
+     fprintf(fp[0], "     return module;\n");
+     fprintf(fp[0], "}\n");
+     fprintf(fp[0], "#endif\n");
 
      return 0;
 }
