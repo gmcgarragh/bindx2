@@ -169,7 +169,7 @@ static int bindx_write_c_util_functions(FILE *fp, const bindx_data *d,
 
           fprintf(fp, ")) {\n");
 
-          fprintf(fp, "%s%seprintf(\"ERROR: %s_%s()\\n\");\n", indent, indent,
+          fprintf(fp, "%s%sfprintf(stderr, \"ERROR: %s_%s()\\n\");\n", indent, indent,
                   d->prefix, subprogram->name);
           fprintf(fp, "%s%sreturn -1;\n", indent, indent);
 
