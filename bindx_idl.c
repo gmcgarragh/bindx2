@@ -269,7 +269,7 @@ static int write_parse_argument_enum_mask_scalar(FILE *fp, int indent, int i_arg
      fprintf(fp, "%s%s = 0;\n", bxis(indent), argument->name);
      fprintf(fp, "%sIDL_ENSURE_ARRAY(argv[%d]);\n", bxis(indent), i_arg);
      fprintf(fp, "%sfor (i = 0; i < argv[%d]->value.arr->n_elts; ++i) {\n", bxis(indent), i_arg);
-          fprintf(fp, "%sif ((r = %s(((IDL_STRING *) argv[%d]->value.arr->data)[i].s)) < 0)\n", bxis(indent + 1), argument->enum_name_to_value, i_arg);
+          fprintf(fp, "%sif ((r = %s(((IDL_STRING *) argv[%d]->value.arr->data)[i].s)) == -1)\n", bxis(indent + 1), argument->enum_name_to_value, i_arg);
                fprintf(fp, "%sIDL_Message(IDL_M_NAMED_GENERIC, IDL_MSG_LONGJMP, \"ERROR: %s()\");\n", bxis(indent + 2), argument->enum_name_to_value);
           fprintf(fp, "%s%s |= r;\n", bxis(indent + 1), argument->name);
      fprintf(fp, "%s}}\n", bxis(indent));

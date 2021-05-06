@@ -144,7 +144,7 @@ static int write_utilities(FILE *fp, const bindx_data *d)
      fprintf(fp, "#else\n");
      fprintf(fp, "          r = name_to_mask(PyUnicode_AsUTF8 (PyList_GetItem(list, i)));\n");
      fprintf(fp, "#endif\n");
-     fprintf(fp, "          if (r < 0) {\n");
+     fprintf(fp, "          if (r == -1) {\n");
      fprintf(fp, "               format = \"ERROR: %%s()\";\n");
      fprintf(fp, "               error  = malloc(strlen(format) - 2 + strlen(name) + 1);\n");
      fprintf(fp, "               sprintf(error, format, name);\n");
