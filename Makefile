@@ -58,10 +58,10 @@ depend:
         if test $${#files} != 0; then \
              if (eval gcc -v 1> /dev/null 2>&1); then \
                   echo gcc -MM -w $$files "> depend.inc"; \
-                  gcc -MM -w $$files > dep.inc; \
+                  gcc -MM -w $$files > depend.inc; \
              else \
                   echo makedepend -f- -Y -- -- $$files "> depend.inc"; \
-                  makedepend -f- -Y -- -- $$files > dep.inc; \
+                  makedepend -f- -Y -- -- $$files > depend.inc; \
              fi \
         else \
              echo -n '' > dep.inc; \

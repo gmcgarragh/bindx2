@@ -3,8 +3,8 @@ bindx.o: bindx.c bindx_c.h bindx_parse.h bindx_util.h \
  prototypes/bindx_parse_int_p.h prototypes/bindx_c_p.h bindx_cpp.h \
  prototypes/bindx_cpp_p.h bindx_f90.h prototypes/bindx_f90_p.h \
  bindx_f77.h prototypes/bindx_f77_p.h bindx_idl.h \
- prototypes/bindx_idl_p.h bindx_py.h prototypes/bindx_py_p.h \
- bindx_yylex_int.h
+ prototypes/bindx_idl_p.h bindx_jl.h prototypes/bindx_jl_p.h bindx_py.h \
+ prototypes/bindx_py_p.h bindx_yylex_int.h
 bindx_c.o: bindx_c.c bindx_c.h bindx_parse.h bindx_util.h \
  prototypes/bindx_util_p.h prototypes/bindx_parse_p.h bindx_parse_int.h \
  prototypes/bindx_parse_int_p.h prototypes/bindx_c_p.h
@@ -24,6 +24,10 @@ bindx_idl.o: bindx_idl.c bindx_c.h bindx_parse.h bindx_util.h \
  prototypes/bindx_util_p.h prototypes/bindx_parse_p.h bindx_parse_int.h \
  prototypes/bindx_parse_int_p.h prototypes/bindx_c_p.h bindx_idl.h \
  prototypes/bindx_idl_p.h
+bindx_jl.o: bindx_jl.c bindx_c.h bindx_parse.h bindx_util.h \
+ prototypes/bindx_util_p.h prototypes/bindx_parse_p.h bindx_parse_int.h \
+ prototypes/bindx_parse_int_p.h prototypes/bindx_c_p.h bindx_jl.h \
+ prototypes/bindx_jl_p.h
 bindx_parse.o: bindx_parse.c bindx_parse.h bindx_util.h \
  prototypes/bindx_util_p.h prototypes/bindx_parse_p.h
 bindx_parse_int.o: bindx_parse_int.c bindx_parse.h bindx_util.h \
