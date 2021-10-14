@@ -67,4 +67,18 @@ depend:
              echo -n '' > dep.inc; \
         fi
 
+# Requires cproto
+proto_types:
+	@if [ -e prototypes ]; then \
+             files='$(OBJECTS)'; \
+	     for object in $$files; do \
+                  source=`echo $$object | sed 's|\.o|\.c|'`; \
+                  if [ -e $$source ]; then \
+                       header=`echo $$object | sed 's|\.o|_p\.h|'`; \
+                       echo "cproto ${CCDEFINES} ${INCDIRS} $$source > prototypes/$$header"; \
+                       cproto ${CCDEFINES} -DCPROTO ${INCDIRS} $$source > prototypes/$$header; \
+                  fi \
+	     done \
+        fi
+
 include depend.inc
