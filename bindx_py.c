@@ -194,6 +194,39 @@ static int write_utilities(FILE *fp, const bindx_data *d)
      fprintf(fp, "\n");
 
 
+     fprintf(fp, "static int check_pyarray_shape(PyObject *array, const char *name, int n, ...)\n");
+     fprintf(fp, "{\n");
+     fprintf(fp, "     int i;\n");
+     fprintf(fp, "     int dim;\n");
+     fprintf(fp, "     int n_py;\n");
+     fprintf(fp, "     int dim_py;\n");
+     fprintf(fp, "     va_list valist;\n");
+
+     fprintf(fp, "     n_py = PyArray_NDIM((PyArrayObject *) array);\n");
+     fprintf(fp, "     if (n_py != n) {\n");
+     fprintf(fp, "          PyErr_Format(XRTMError, \"ERROR: number of dimensions for %%s input (%%d) must be == %%d\", name, n_py);\n");
+     fprintf(fp, "          return -1;\n");
+     fprintf(fp, "     }\n");
+
+     fprintf(fp, "     va_start(valist, n);\n");
+
+     fprintf(fp, "     for (i = 0; i < n; ++i) {\n");
+     fprintf(fp, "          dim = va_arg(valist, int);\n");
+     fprintf(fp, "          dim_py = PyArray_DIM((PyArrayObject *) array, i);\n");
+     fprintf(fp, "          if (dim_py != dim) {\n");
+     fprintf(fp, "              PyErr_Format(XRTMError, \"ERROR: dimension %%d of %%s input (%%d) must be == %%d\", i, name, dim_py, dim);\n");
+     fprintf(fp, "              return -1;\n");
+     fprintf(fp, "          }\n");
+     fprintf(fp, "     }\n");
+
+     fprintf(fp, "     va_end(valist);\n");
+
+     fprintf(fp, "     return 0;\n");
+     fprintf(fp, "}\n");
+     fprintf(fp, "\n");
+     fprintf(fp, "\n");
+
+
      fprintf(fp, "static void *array_from_pyarray(PyObject *array, size_t size)\n");
      fprintf(fp, "{\n");
      fprintf(fp, "     int i;\n");
@@ -396,6 +429,13 @@ static int write_subprograms(FILE *fp, const bindx_data *d,
                     fprintf(fp, "%s%s_ndarray = PyArray_FROM_OTF(%s_object, %s, %s);\n",
                             bxis(indent), argument->name, argument->name, type_to_numpy_typenum(&argument->type), usage_to_numpy_requirements(argument->usage));
                     fprintf(fp, "%sif (%s_ndarray == NULL)\n", bxis(indent), argument->name);
+                    indent++;
+                    fprintf(fp, "%sreturn NULL;\n", bxis(indent));
+                    indent--;
+                    fprintf(fp, "%sif (check_pyarray_shape(%s_ndarray, \"%s\", %d", bxis(indent), argument->name, argument->name, argument->type.rank);
+                    for (i = 0; i < argument->type.rank; ++i)
+                         fprintf(fp, ", %s", argument->type.dimens[i]);
+                    fprintf(fp, ") < 0)\n");
                     indent++;
                     fprintf(fp, "%sreturn NULL;\n", bxis(indent));
                     indent--;
