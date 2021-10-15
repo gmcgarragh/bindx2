@@ -27,6 +27,7 @@ enum lex_item {
      LEX_ITEM_PREFIX = 256,
      LEX_ITEM_INCLUDE,
      LEX_ITEM_ENUMERATION,
+     LEX_ITEM_GLOBAL_CONST,
      LEX_ITEM_STRUCTURE,
      LEX_ITEM_SUBPROGRAM_GENERAL,
      LEX_ITEM_SUBPROGRAM_INIT,
@@ -97,6 +98,16 @@ typedef struct {
      struct list_data *prev;
      struct list_data *next;
 
+     type_data type;
+     lex_type_data lex_type;
+} global_const_data;
+
+
+typedef struct {
+     char *name;
+     struct list_data *prev;
+     struct list_data *next;
+
      size_t size;
 } structure_data;
 
@@ -135,6 +146,7 @@ typedef struct {
      char *prefix;
      char *PREFIX;
      enumeration_data enums;
+     global_const_data consts;
      structure_data structs;
      subprogram_data subs_all;
      subprogram_data subs_general;

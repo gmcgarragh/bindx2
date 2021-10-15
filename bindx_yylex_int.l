@@ -47,6 +47,7 @@ void comment(locus_data *locus);
 "prefix"				{ return LEX_ITEM_PREFIX; }
 "include"				{ return LEX_ITEM_INCLUDE; }
 "enumeration"				{ return LEX_ITEM_ENUMERATION; }
+"global_const"				{ return LEX_ITEM_GLOBAL_CONST; }
 "structure"				{ return LEX_ITEM_STRUCTURE; }
 "subprogram_general"			{ return LEX_ITEM_SUBPROGRAM_GENERAL; }
 "subprogram_init"			{ return LEX_ITEM_SUBPROGRAM_INIT; }

@@ -19,55 +19,6 @@
 /*******************************************************************************
  *
  ******************************************************************************/
-static void parse_char(locus_data *locus, char c)
-{
-     lex_type_data lex_type;
-
-     if (yy_lex(locus, &lex_type) != c)
-          parse_error(locus, "expected %c at %s", c, get_yytext());
-}
-
-
-
-static char *parse_string(locus_data *locus)
-{
-     lex_type_data lex_type;
-
-     if (yy_lex(locus, &lex_type) != LEX_TYPE_STRING)
-          parse_error(locus, "expected string at %s", get_yytext());
-
-     return lex_type.s;
-}
-
-
-
-static int parse_int(locus_data *locus)
-{
-     lex_type_data lex_type;
-
-     if (yy_lex(locus, &lex_type) != LEX_TYPE_LONG)
-          parse_error(locus, "expected an integer at %s", get_yytext());
-
-     return lex_type.l;
-}
-
-
-
-static char *parse_identifier(locus_data *locus)
-{
-     lex_type_data lex_type;
-
-     if (yy_lex(locus, &lex_type) != LEX_TYPE_IDENTIFIER)
-          parse_error(locus, "expected an identifier at %s", get_yytext());
-
-     return lex_type.s;
-}
-
-
-
-/*******************************************************************************
- *
- ******************************************************************************/
 static const char *subprogram_argument_option_names[] = {
      "enum_external",
      "enum_mask",
@@ -89,77 +40,63 @@ GINDEX_NAME_MASK_TEMPLATE_STATIC(subprogram_argument_option,
                                  N_SUBPROGRAM_ARGUMENT_OPTIONS)
 
 
-
 /*******************************************************************************
  *
  ******************************************************************************/
-static enum_member_data *parse_enum_member(locus_data *locus)
+static void parse_char(locus_data *locus, char c)
 {
-     enum_member_data *enum_member;
-
-     enum_member = malloc(sizeof(enum_member_data));
-
-     enum_member->name = parse_identifier(locus);
-     parse_char(locus, '=');
-     enum_member->value = parse_int(locus);
-
-     return enum_member;
-}
-
-
-
-/*******************************************************************************
- *
- ******************************************************************************/
-static enumeration_data *parse_enumeration(locus_data *locus)
-{
-     int r;
-
-     enum_member_data *enum_member;
-
-     enumeration_data *enumeration;
-
      lex_type_data lex_type;
 
-     enumeration = malloc(sizeof(enumeration_data));
-
-     enumeration->name = parse_identifier(locus);
-
-     enumeration->members = malloc(sizeof(enum_member_data));
-     list_init(enumeration->members);
-
-     parse_char(locus, ',');
-
-     do {
-          enum_member = parse_enum_member(locus);
-
-          if (list_append(enumeration->members, enum_member, 1) == NULL)
-               parse_error(locus, "duplicate enumeration name: %s", enumeration->name);
-     } while ((r = yy_lex(locus, &lex_type)) == ',');
-
-     if (r != ';')
-          parse_error(locus, "expected an \';\' at %s", get_yytext());
-
-     return enumeration;
+     if (yy_lex(locus, &lex_type) != c)
+          parse_error(locus, "expected %c at %s", c, get_yytext());
 }
 
 
 
-/*******************************************************************************
- *
- ******************************************************************************/
-static structure_data *parse_structure(locus_data *locus)
+static char *parse_string(locus_data *locus)
 {
-     structure_data *structure;
+     lex_type_data lex_type;
 
-     structure = malloc(sizeof(structure_data));
+     if (yy_lex(locus, &lex_type) != LEX_TYPE_STRING)
+          parse_error(locus, "expected a string at %s", get_yytext());
 
-     structure->name = parse_identifier(locus);
-     structure->size = parse_int(locus);
+     return lex_type.s;
+}
 
-     parse_char(locus, ';');
 
-     return structure;
+
+static int parse_int(locus_data *locus)
+{
+     lex_type_data lex_type;
+
+     if (yy_lex(locus, &lex_type) != LEX_TYPE_LONG)
+          parse_error(locus, "expected an integer at %s", get_yytext());
+
+     return lex_type.l;
+}
+
+
+
+static double parse_double(locus_data *locus)
+{
+     lex_type_data lex_type;
+
+     if (yy_lex(locus, &lex_type) != LEX_TYPE_DOUBLE)
+          parse_error(locus, "expected a double at %s", get_yytext());
+
+     return lex_type.d;
+}
+
+
+
+static char *parse_identifier(locus_data *locus)
+{
+     lex_type_data lex_type;
+
+     if (yy_lex(locus, &lex_type) != LEX_TYPE_IDENTIFIER)
+          parse_error(locus, "expected an identifier at %s", get_yytext());
+
+     return lex_type.s;
 }
 
 
@@ -221,6 +158,112 @@ static type_data parse_type(locus_data *locus)
      }
 
      return type;
+}
+
+
+
+/*******************************************************************************
+ *
+ ******************************************************************************/
+static enum_member_data *parse_enum_member(locus_data *locus)
+{
+     enum_member_data *enum_member;
+
+     enum_member = malloc(sizeof(enum_member_data));
+
+     enum_member->name = parse_identifier(locus);
+     parse_char(locus, '=');
+     enum_member->value = parse_int(locus);
+
+     return enum_member;
+}
+
+
+
+/*******************************************************************************
+ *
+ ******************************************************************************/
+static enumeration_data *parse_enumeration(locus_data *locus)
+{
+     int r;
+
+     enum_member_data *enum_member;
+
+     enumeration_data *enumeration;
+
+     lex_type_data lex_type;
+
+     enumeration = malloc(sizeof(enumeration_data));
+
+     enumeration->name = parse_identifier(locus);
+
+     enumeration->members = malloc(sizeof(enum_member_data));
+     list_init(enumeration->members);
+
+     parse_char(locus, ',');
+
+     do {
+          enum_member = parse_enum_member(locus);
+
+          if (list_append(enumeration->members, enum_member, 1) == NULL)
+               parse_error(locus, "duplicate enumeration name: %s", enumeration->name);
+     } while ((r = yy_lex(locus, &lex_type)) == ',');
+
+     if (r != ';')
+          parse_error(locus, "expected an \';\' at %s", get_yytext());
+
+     return enumeration;
+}
+
+
+
+/*******************************************************************************
+ *
+ ******************************************************************************/
+static global_const_data *parse_global_const(locus_data *locus)
+{
+     global_const_data *global_const;
+
+     global_const = malloc(sizeof(global_const_data));
+
+     global_const->type = parse_type(locus);
+     global_const->name = parse_identifier(locus);
+     parse_char(locus, '=');
+
+     switch(global_const->type.type) {
+     case LEX_BINDX_TYPE_INT:
+          global_const->lex_type.l = parse_int(locus);
+          break;
+     case LEX_BINDX_TYPE_DOUBLE:
+          global_const->lex_type.d = parse_double(locus);
+          break;
+     default:
+          parse_error(locus, "invalid lex_bindx_type value: %s", global_const->type.name);
+          break;
+     }
+
+     parse_char(locus, ';');
+
+     return global_const;
+}
+
+
+
+/*******************************************************************************
+ *
+ ******************************************************************************/
+static structure_data *parse_structure(locus_data *locus)
+{
+     structure_data *structure;
+
+     structure = malloc(sizeof(structure_data));
+
+     structure->name = parse_identifier(locus);
+     structure->size = parse_int(locus);
+
+     parse_char(locus, ';');
+
+     return structure;
 }
 
 
@@ -460,6 +503,7 @@ void bindx_init(bindx_data *d)
      d->include = NULL;
 
      list_init(&d->enums);
+     list_init(&d->consts);
      list_init(&d->structs);
      list_init(&d->subs_all);
      list_init(&d->subs_general);
@@ -479,6 +523,7 @@ void bindx_parse(bindx_data *d, locus_data *locus)
      lex_type_data lex_type;
 
      enumeration_data *enumeration;
+     global_const_data *global_const;
      structure_data *structure;
      subprogram_data *subprogram;
 
@@ -498,6 +543,11 @@ void bindx_parse(bindx_data *d, locus_data *locus)
                     enumeration = parse_enumeration(locus);
                     if (list_append(&d->enums, enumeration, 1) == NULL)
                          parse_error(locus, "duplicate enumeration name: %s", enumeration->name);
+                    break;
+               case LEX_ITEM_GLOBAL_CONST:
+                    global_const = parse_global_const(locus);
+                    if (list_append(&d->consts, global_const, 1) == NULL)
+                         parse_error(locus, "duplicate global_const name: %s", global_const->name);
                     break;
                case LEX_ITEM_STRUCTURE:
                     structure = parse_structure(locus);
@@ -578,6 +628,15 @@ static void free_enumeration(enumeration_data *d)
      free(d->members);
 }
 
+
+
+/*******************************************************************************
+ *
+ ******************************************************************************/
+static void free_global_const(global_const_data *d)
+{
+     free(d->name);
+}
 
 
 
@@ -664,6 +723,7 @@ static void free_subprogram(subprogram_data *d)
 void bindx_free(bindx_data *d)
 {
      enumeration_data *enumeration;
+     global_const_data *global_const;
      structure_data *structure;
      subprogram_data *subprogram;
 
@@ -676,6 +736,10 @@ void bindx_free(bindx_data *d)
           free_enumeration(enumeration);
      list_free(&d->enums);
 
+     list_for_each(&d->consts, global_const)
+          free_global_const(global_const);
+     list_free(&d->consts);
+
      list_for_each(&d->structs, structure)
           free_structure(structure);
      list_free(&d->structs);
@@ -687,6 +751,45 @@ void bindx_free(bindx_data *d)
      list_free(&d->subs_general);
      list_free(&d->subs_init);
      list_free(&d->subs_free);
+}
+
+
+
+/*******************************************************************************
+ *
+ ******************************************************************************/
+static int write_type(FILE *fp, const type_data *d)
+{
+     int i;
+
+     switch(d->type) {
+          case LEX_BINDX_TYPE_VOID:
+               break;
+          case LEX_BINDX_TYPE_ENUM:
+               fprintf(fp, "enum ");
+               break;
+          case LEX_BINDX_TYPE_CHAR:
+               break;
+          case LEX_BINDX_TYPE_INT:
+               break;
+          case LEX_BINDX_TYPE_DOUBLE:
+               break;
+          case LEX_BINDX_TYPE_STRUCTURE:
+               break;
+          default:
+               INTERNAL_ERROR("Invalid lex_bindx_type value: %d", d->type);
+               break;
+     }
+
+     fprintf(fp, "%s ", d->name);
+     fprintf(fp, "%d",  d->rank);
+
+     if (d->rank > 0) {
+          for (i = 0; i < d->rank; ++i)
+               fprintf(fp, " \"%s\"", d->dimens[i]);
+     }
+
+     return 0;
 }
 
 
@@ -734,9 +837,23 @@ static int write_enumeration(FILE *fp, const enumeration_data *d)
 /*******************************************************************************
  *
  ******************************************************************************/
-static int write_structure(FILE *fp, const structure_data *d)
+static int write_global_const(FILE *fp, const global_const_data *d)
 {
-     fprintf(fp, "structure %s %lu;\n", d->name, d->size);
+     fprintf(fp, "global_const ");
+     write_type(fp, &d->type);
+     fprintf(fp, " %s = ", d->name);
+     switch(d->type.type) {
+     case LEX_BINDX_TYPE_INT:
+          fprintf(fp, "%ld", d->lex_type.l);
+          break;
+     case LEX_BINDX_TYPE_DOUBLE:
+          fprintf(fp, "%f",  d->lex_type.d);
+          break;
+     default:
+          INTERNAL_ERROR("invalid lex_bindx_type value: %s", d->type.name);
+          break;
+     }
+     fprintf(fp, ";\n");
 
      return 0;
 }
@@ -746,36 +863,9 @@ static int write_structure(FILE *fp, const structure_data *d)
 /*******************************************************************************
  *
  ******************************************************************************/
-static int write_type(FILE *fp, const type_data *d)
+static int write_structure(FILE *fp, const structure_data *d)
 {
-     int i;
-
-     switch(d->type) {
-          case LEX_BINDX_TYPE_VOID:
-               break;
-          case LEX_BINDX_TYPE_ENUM:
-               fprintf(fp, "enum ");
-               break;
-          case LEX_BINDX_TYPE_CHAR:
-               break;
-          case LEX_BINDX_TYPE_INT:
-               break;
-          case LEX_BINDX_TYPE_DOUBLE:
-               break;
-          case LEX_BINDX_TYPE_STRUCTURE:
-               break;
-          default:
-               INTERNAL_ERROR("Invalid lex_bindx_type value: %d", d->type);
-               break;
-     }
-
-     fprintf(fp, "%s ", d->name);
-     fprintf(fp, "%d",  d->rank);
-
-     if (d->rank > 0) {
-          for (i = 0; i < d->rank; ++i)
-               fprintf(fp, " \"%s\"", d->dimens[i]);
-     }
+     fprintf(fp, "structure %s %lu;\n", d->name, d->size);
 
      return 0;
 }
@@ -892,6 +982,7 @@ static int write_subprogram(FILE *fp, const subprogram_data *d, const char *tag)
 int bindx_write(FILE *fp, const bindx_data *d)
 {
      enumeration_data *enumeration;
+     global_const_data *global_const;
      structure_data *structure;
      subprogram_data *subprogram;
 
@@ -900,31 +991,31 @@ int bindx_write(FILE *fp, const bindx_data *d)
 
      list_for_each(&d->enums, enumeration) {
           write_enumeration(fp, enumeration);
+          fprintf(fp, "\n");
+     }
 
+     list_for_each(&d->consts, global_const) {
+          write_global_const(fp, global_const);
           fprintf(fp, "\n");
      }
 
      list_for_each(&d->structs, structure) {
           write_structure(fp, structure);
-
           fprintf(fp, "\n");
      }
 
      list_for_each(&d->subs_init, subprogram) {
           write_subprogram(fp, subprogram, "_init");
-
           fprintf(fp, "\n");
      }
 
      list_for_each(&d->subs_free, subprogram) {
           write_subprogram(fp, subprogram, "_free");
-
           fprintf(fp, "\n");
      }
 
      list_for_each(&d->subs_general, subprogram) {
           write_subprogram(fp, subprogram, "_general");
-
           fprintf(fp, "\n");
      }
 
