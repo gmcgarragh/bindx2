@@ -204,7 +204,7 @@ static int write_utilities(FILE *fp, const bindx_data *d)
 
      fprintf(fp, "     n_py = PyArray_NDIM((PyArrayObject *) array);\n");
      fprintf(fp, "     if (n_py != n) {\n");
-     fprintf(fp, "          PyErr_Format(XRTMError, \"ERROR: number of dimensions for %%s input (%%d) must be == %%d\", name, n_py);\n");
+     fprintf(fp, "          PyErr_Format(XRTMError, \"ERROR: Number of dimensions for %%s input (%%d) must be == %%d\", name, n_py);\n");
      fprintf(fp, "          return -1;\n");
      fprintf(fp, "     }\n");
 
@@ -214,7 +214,7 @@ static int write_utilities(FILE *fp, const bindx_data *d)
      fprintf(fp, "          dim = va_arg(valist, int);\n");
      fprintf(fp, "          dim_py = PyArray_DIM((PyArrayObject *) array, i);\n");
      fprintf(fp, "          if (dim_py != dim) {\n");
-     fprintf(fp, "              PyErr_Format(XRTMError, \"ERROR: dimension %%d of %%s input (%%d) must be == %%d\", i, name, dim_py, dim);\n");
+     fprintf(fp, "              PyErr_Format(XRTMError, \"ERROR: Dimension %%d of %%s input (%%d) must be == %%d\", i, name, dim_py, dim);\n");
      fprintf(fp, "              return -1;\n");
      fprintf(fp, "          }\n");
      fprintf(fp, "     }\n");

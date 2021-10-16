@@ -148,7 +148,7 @@ static type_data parse_type(locus_data *locus)
                type.rank = parse_int(locus);
                break;
           default:
-               parse_error(locus, "invalid type specificaton: %s", get_yytext());
+               parse_error(locus, "Invalid type specificaton: %s", get_yytext());
                break;
      }
 
@@ -238,7 +238,7 @@ static global_const_data *parse_global_const(locus_data *locus)
           global_const->lex_type.d = parse_double(locus);
           break;
      default:
-          parse_error(locus, "invalid lex_bindx_type value: %s", global_const->type.name);
+          parse_error(locus, "Invalid lex_bindx_type value: %s", global_const->type.name);
           break;
      }
 
@@ -285,7 +285,7 @@ static int parse_usage(locus_data *locus)
           case LEX_SUBPROGRAM_ARGUMENT_USAGE_IN_OUT:
                break;
           default:
-               parse_error(locus, "invalid argument usage: %s", get_yytext());
+               parse_error(locus, "Invalid argument usage: %s", get_yytext());
                break;
      }
 
@@ -347,7 +347,7 @@ static argument_data *parse_argument(locus_data *locus, const char *delims, int 
                     argument->options |= SUBPROGRAM_ARGUMENT_OPTION_MASK_LIST_SIZE;
                     break;
                default:
-                    parse_error(locus, "invalid argument option: %s", get_yytext());
+                    parse_error(locus, "Invalid argument option: %s", get_yytext());
                     break;
           }
      }
@@ -578,7 +578,7 @@ void bindx_parse(bindx_data *d, locus_data *locus)
                          parse_error(locus, "duplicate subprogram name: %s", subprogram->name);
                     break;
                default:
-                    parse_error(locus, "invalid interface item: %s", get_yytext());
+                    parse_error(locus, "Invalid interface item: %s", get_yytext());
                     break;
           }
      }
@@ -592,11 +592,11 @@ void bindx_parse(bindx_data *d, locus_data *locus)
 void bindx_finialize(bindx_data *d)
 {
      if (list_is_empty(&d->subs_init)) {
-          fprintf(stderr, "ERROR: an init subprogram has not been defined");
+          fprintf(stderr, "ERROR: An init subprogram has not been defined");
           exit(1);
      }
      if (list_is_empty(&d->subs_free)) {
-          fprintf(stderr, "ERROR: an free subprogram has not been defined");
+          fprintf(stderr, "ERROR: An free subprogram has not been defined");
           exit(1);
      }
 }
@@ -850,7 +850,7 @@ static int write_global_const(FILE *fp, const global_const_data *d)
           fprintf(fp, "%f",  d->lex_type.d);
           break;
      default:
-          INTERNAL_ERROR("invalid lex_bindx_type value: %s", d->type.name);
+          INTERNAL_ERROR("Invalid lex_bindx_type value: %s", d->type.name);
           break;
      }
      fprintf(fp, ";\n");
