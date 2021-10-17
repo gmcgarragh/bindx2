@@ -227,23 +227,23 @@ static int write_utilities(FILE *fp, const bindx_data *d)
      fprintf(fp, "\n");
 
 
-     fprintf(fp, "static void *array_from_pyarray(PyObject *array, size_t size)\n");
+     fprintf(fp, "static void *array_from_ndarray(PyObject *ndarray, size_t size)\n");
      fprintf(fp, "{\n");
      fprintf(fp, "     int i;\n");
      fprintf(fp, "     int n_dims;\n");
      fprintf(fp, "     size_t *dims;\n");
-     fprintf(fp, "     void *array2;\n");
+     fprintf(fp, "     void *array;\n");
 
-     fprintf(fp, "     n_dims = PyArray_NDIM((PyArrayObject *) array);\n");
+     fprintf(fp, "     n_dims = PyArray_NDIM((PyArrayObject *) ndarray);\n");
      fprintf(fp, "     dims = malloc(n_dims * sizeof(long));\n");
      fprintf(fp, "     for (i = 0; i < n_dims; ++i)\n");
-     fprintf(fp, "          dims[i] = PyArray_DIM((PyArrayObject *) array, i);\n");
+     fprintf(fp, "          dims[i] = PyArray_DIM((PyArrayObject *) ndarray, i);\n");
 
-     fprintf(fp, "     array2 = array_from_mem(PyArray_DATA((PyArrayObject *) array), n_dims, dims, size, 1);\n");
+     fprintf(fp, "     array = array_from_mem(PyArray_DATA((PyArrayObject *) ndarray), n_dims, dims, size, 1);\n");
 
      fprintf(fp, "     free(dims);\n");
 
-     fprintf(fp, "     return array2;\n");
+     fprintf(fp, "     return array;\n");
      fprintf(fp, "}\n");
      fprintf(fp, "\n");
      fprintf(fp, "\n");
@@ -441,7 +441,7 @@ static int write_subprograms(FILE *fp, const bindx_data *d,
                     indent--;
                     fprintf(fp, "%s%s = (", bxis(indent), argument->name);
                     bindx_write_c_declaration(fp, d, &argument->type, NULL);
-                    fprintf(fp, ") array_from_pyarray(%s_ndarray, %ld);\n", argument->name, bindx_c_type_size(&argument->type));
+                    fprintf(fp, ") array_from_ndarray(%s_ndarray, %ld);\n", argument->name, bindx_c_type_size(&argument->type));
                }
                else
                if (argument->type.rank > 0 && argument->usage == LEX_SUBPROGRAM_ARGUMENT_USAGE_OUT) {
@@ -455,7 +455,7 @@ static int write_subprograms(FILE *fp, const bindx_data *d,
                     indent--;
                     fprintf(fp, "%s%s = (", bxis(indent), argument->name);
                     bindx_write_c_declaration(fp, d, &argument->type, NULL);
-                    fprintf(fp, ") array_from_pyarray(%s_ndarray, %ld);\n", argument->name, bindx_c_type_size(&argument->type));
+                    fprintf(fp, ") array_from_ndarray(%s_ndarray, %ld);\n", argument->name, bindx_c_type_size(&argument->type));
                }
           }
 
