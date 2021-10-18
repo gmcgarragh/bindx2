@@ -19,9 +19,9 @@
 static const char *get_idl_type(const type_data *d)
 {
      switch(d->type) {
-/*
           case LEX_BINDX_TYPE_ENUM:
-               break;
+               return "IDL_TYP_LONG";
+/*
           case LEX_BINDX_TYPE_CHAR:
                break;
 */
@@ -73,9 +73,9 @@ static const char *get_idl_type_alt(const type_data *d)
 static const char *get_idl_value_var(const type_data *d)
 {
      switch(d->type) {
-/*
           case LEX_BINDX_TYPE_ENUM:
-               break;
+               return "l";
+/*
           case LEX_BINDX_TYPE_CHAR:
                break;
 */
