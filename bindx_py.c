@@ -148,7 +148,7 @@ static int write_utilities(FILE *fp, const bindx_data *d)
      fprintf(fp, "               format = \"ERROR: %%s()\";\n");
      fprintf(fp, "               error  = malloc(strlen(format) - 2 + strlen(name) + 1);\n");
      fprintf(fp, "               sprintf(error, format, name);\n");
-     fprintf(fp, "               PyErr_SetString(XRTMError, error);\n");
+     fprintf(fp, "               PyErr_SetString(%sError, error);\n", d->PREFIX);
      fprintf(fp, "               free(error);\n");
      fprintf(fp, "               return -1;\n");
      fprintf(fp, "          }\n");
@@ -181,7 +181,7 @@ static int write_utilities(FILE *fp, const bindx_data *d)
      fprintf(fp, "               format = \"ERROR: %%s()\";\n");
      fprintf(fp, "               error  = malloc(strlen(format) - 2 + strlen(name) + 1);\n");
      fprintf(fp, "               sprintf(error, format, name);\n");
-     fprintf(fp, "               PyErr_SetString(XRTMError, error);\n");
+     fprintf(fp, "               PyErr_SetString(%sError, error);\n", d->PREFIX);
      fprintf(fp, "               free(error);\n");
      fprintf(fp, "               return -1;\n");
      fprintf(fp, "          }\n");
@@ -204,7 +204,7 @@ static int write_utilities(FILE *fp, const bindx_data *d)
 
      fprintf(fp, "     n_py = PyArray_NDIM((PyArrayObject *) array);\n");
      fprintf(fp, "     if (n_py != n) {\n");
-     fprintf(fp, "          PyErr_Format(XRTMError, \"ERROR: Number of dimensions for %%s input (%%d) must be == %%d\", name, n_py);\n");
+     fprintf(fp, "          PyErr_Format(%sError, \"ERROR: Number of dimensions for %%s input (%%d) must be == %%d\", name, n_py);\n", d->PREFIX);
      fprintf(fp, "          return -1;\n");
      fprintf(fp, "     }\n");
 
@@ -214,7 +214,7 @@ static int write_utilities(FILE *fp, const bindx_data *d)
      fprintf(fp, "          dim = va_arg(valist, int);\n");
      fprintf(fp, "          dim_py = PyArray_DIM((PyArrayObject *) array, i);\n");
      fprintf(fp, "          if (dim_py != dim) {\n");
-     fprintf(fp, "              PyErr_Format(XRTMError, \"ERROR: Dimension %%d of %%s input (%%d) must be == %%d\", i, name, dim_py, dim);\n");
+     fprintf(fp, "              PyErr_Format(%sError, \"ERROR: Dimension %%d of %%s input (%%d) must be == %%d\", i, name, dim_py, dim);\n", d->PREFIX);
      fprintf(fp, "              return -1;\n");
      fprintf(fp, "          }\n");
      fprintf(fp, "     }\n");
@@ -403,7 +403,7 @@ static int write_subprograms(FILE *fp, const bindx_data *d,
                     fprintf(fp, "%s%s = %s(%s_string);\n", bxis(indent), argument->name, argument->enum_name_to_value, argument->name);
                     fprintf(fp, "%sif ((int) %s < 0) {\n", bxis(indent), argument->name);
                     indent++;
-                    fprintf(fp, "%sPyErr_SetString(XRTMError, \"ERROR: %s()\");\n", bxis(indent), argument->enum_name_to_value);
+                    fprintf(fp, "%sPyErr_SetString(%sError, \"ERROR: %s()\");\n", bxis(indent), d->PREFIX, argument->enum_name_to_value);
                     fprintf(fp, "%sreturn %s;\n", bxis(indent), get_error_return_value(sub_type));
                     indent--;
                     fprintf(fp, "%s}\n", bxis(indent));
@@ -490,7 +490,7 @@ static int write_subprograms(FILE *fp, const bindx_data *d,
 
           fprintf(fp, "%sif (%s) {\n", bxis(indent), xrtm_error_conditional(subprogram->type.type));
           indent++;
-          fprintf(fp, "%sPyErr_SetString(XRTMError, \"ERROR: %s_%s()\");\n", bxis(indent), d->prefix, subprogram->name);
+          fprintf(fp, "%sPyErr_SetString(%sError, \"ERROR: %s_%s()\");\n", bxis(indent), d->PREFIX, d->prefix, subprogram->name);
           fprintf(fp, "%sreturn %s;\n", bxis(indent), get_error_return_value(sub_type));
           indent--;
           fprintf(fp, "%s}\n", bxis(indent));
