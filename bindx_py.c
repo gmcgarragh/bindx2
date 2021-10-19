@@ -403,7 +403,7 @@ static int write_subprograms(FILE *fp, const bindx_data *d,
                     fprintf(fp, "%s%s = %s(%s_string);\n", bxis(indent), argument->name, argument->enum_name_to_value, argument->name);
                     fprintf(fp, "%sif ((int) %s < 0) {\n", bxis(indent), argument->name);
                     indent++;
-                    fprintf(fp, "%sPyErr_SetString(XRTMError, \"ERROR: xrtm_solver_name_to_mask()\");\n", bxis(indent));
+                    fprintf(fp, "%sPyErr_SetString(XRTMError, \"ERROR: %s()\");\n", bxis(indent), argument->enum_name_to_value);
                     fprintf(fp, "%sreturn %s;\n", bxis(indent), get_error_return_value(sub_type));
                     indent--;
                     fprintf(fp, "%s}\n", bxis(indent));

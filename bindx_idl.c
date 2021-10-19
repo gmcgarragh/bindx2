@@ -397,7 +397,7 @@ static int write_subprograms(FILE *fp, const bindx_data *d,
           if (max_argument_rank(subprogram->args) > 1)
                fprintf(fp, "%ssize_t dim[%d];\n", bxis(indent), MAX_DIMENS);
 
-          fprintf(fp, "%sxrtm_data *d;\n", bxis(indent));
+          fprintf(fp, "%s%s_data *d;\n", bxis(indent), d->prefix);
 
           if (subprogram->has_return_value)
                fprintf(fp, "%sIDL_VARIABLE var;\n", bxis(indent));
@@ -441,8 +441,8 @@ static int write_subprograms(FILE *fp, const bindx_data *d,
           if (sub_type != SUBPROGRAM_TYPE_INIT) {
                fprintf(fp, "%sIDL_ENSURE_ARRAY(argv[0]);\n", bxis(indent));
                fprintf(fp, "%sif (argv[0]->type != IDL_TYP_BYTE)\n", bxis(indent));
-               fprintf(fp, "%sIDL_Message(IDL_M_NAMED_GENERIC, IDL_MSG_LONGJMP, \"ERROR: Invalid xrtm instance\");\n", bxis(indent + 1));
-               fprintf(fp, "%sd = (xrtm_data *) argv[0]->value.arr->data;\n", bxis(indent));
+               fprintf(fp, "%sIDL_Message(IDL_M_NAMED_GENERIC, IDL_MSG_LONGJMP, \"ERROR: Invalid %s instance\");\n", bxis(indent + 1), d->prefix);
+               fprintf(fp, "%sd = (%s_data *) argv[0]->value.arr->data;\n", bxis(indent), d->prefix);
           }
 
           i = 1;
@@ -666,19 +666,19 @@ int bindx_write_idl(FILE **fp, const bindx_data *d, const char *name)
      fprintf(fp[0], "\n");
      fprintf(fp[0], "\n");
 
-     fprintf(fp[0], "int  xrtm_int_startup(void);\n");
-     fprintf(fp[0], "void xrtm_int_exit_handler(void);\n");
+     fprintf(fp[0], "int  %s_int_startup(void);\n", d->prefix);
+     fprintf(fp[0], "void %s_int_exit_handler(void);\n", d->prefix);
      fprintf(fp[0], "\n");
      write_prototypes(fp[0], d, &d->subs_all, 0);
      fprintf(fp[0], "\n");
      fprintf(fp[0], "\n");
 
      fprintf(fp[0], "#ifdef __IDLPRE53__\n");
-     fprintf(fp[0], "     static IDL_SYSFUN_DEF xrtm_int_procedures[] = {\n");
+     fprintf(fp[0], "     static IDL_SYSFUN_DEF %s_int_procedures[] = {\n", d->prefix);
      write_idl_sysfun_defs(fp[0], d, &d->subs_all, 2, 0);
      fprintf(fp[0], "     };\n");
      fprintf(fp[0], "#else\n");
-     fprintf(fp[0], "     static IDL_SYSFUN_DEF2 xrtm_int_procedures[] = {\n");
+     fprintf(fp[0], "     static IDL_SYSFUN_DEF2 %s_int_procedures[] = {\n", d->prefix);
      write_idl_sysfun_defs(fp[0], d, &d->subs_all, 2, 1);
      fprintf(fp[0], "     };\n");
      fprintf(fp[0], "#endif\n");
@@ -688,23 +688,23 @@ int bindx_write_idl(FILE **fp, const bindx_data *d, const char *name)
      fprintf(fp[0], "int IDL_Load(void)\n");
      fprintf(fp[0], "{\n");
      fprintf(fp[0], "#ifdef __IDLPRE53__\n");
-     fprintf(fp[0], "     if (! IDL_AddSystemRoutine(xrtm_int_procedures, FALSE,\n");
-     fprintf(fp[0], "                                ARRLEN(xrtm_int_procedures))) {\n");
+     fprintf(fp[0], "     if (! IDL_AddSystemRoutine(%s_int_procedures, FALSE,\n", d->prefix);
+     fprintf(fp[0], "                                ARRLEN(%s_int_procedures))) {\n", d->prefix);
      fprintf(fp[0], "          return IDL_FALSE;\n");
      fprintf(fp[0], "     }\n");
      fprintf(fp[0], "#else\n");
-     fprintf(fp[0], "     if (! IDL_SysRtnAdd       (xrtm_int_procedures, FALSE,\n");
-     fprintf(fp[0], "                                ARRLEN(xrtm_int_procedures))) {\n");
+     fprintf(fp[0], "     if (! IDL_SysRtnAdd       (%s_int_procedures, FALSE,\n", d->prefix);
+     fprintf(fp[0], "                                ARRLEN(%s_int_procedures))) {\n", d->prefix);
      fprintf(fp[0], "          return IDL_FALSE;\n");
      fprintf(fp[0], "     }\n");
      fprintf(fp[0], "#endif\n");
-     fprintf(fp[0], "     IDL_ExitRegister(xrtm_int_exit_handler);\n");
+     fprintf(fp[0], "     IDL_ExitRegister(%s_int_exit_handler);\n", d->prefix);
      fprintf(fp[0], "     return(IDL_TRUE);\n");
      fprintf(fp[0], "}\n");
      fprintf(fp[0], "\n");
      fprintf(fp[0], "\n");
 
-     fprintf(fp[0], "void xrtm_int_exit_handler(void)\n");
+     fprintf(fp[0], "void %s_int_exit_handler(void)\n", d->prefix);
      fprintf(fp[0], "{\n");
      fprintf(fp[0], "\n");
      fprintf(fp[0], "}\n");
@@ -719,10 +719,10 @@ int bindx_write_idl(FILE **fp, const bindx_data *d, const char *name)
      write_dlm_header_top(fp[1]);
      fprintf(fp[1], "\n");
 
-     fprintf(fp[1], "MODULE      xrtm\n");
-     fprintf(fp[1], "DESCRIPTION xrtm\n");
+     fprintf(fp[1], "MODULE      %s\n", d->prefix);
+     fprintf(fp[1], "DESCRIPTION %s\n", d->prefix);
      fprintf(fp[1], "VERSION     0.1\n");
-     fprintf(fp[1], "SOURCE      xrtm developers\n");
+     fprintf(fp[1], "SOURCE      %s developers\n", d->prefix);
      fprintf(fp[1], "BUILD_DATE  xxxx/xx/xx\n");
      write_dlm_procedures(fp[1], d, &d->subs_all);
 
