@@ -252,7 +252,7 @@ static int write_parse_argument_enum_scalar(FILE *fp, int indent, int i_arg,
      fprintf(fp, "%sIDL_ENSURE_SCALAR(argv[%d]);\n", bxis(indent), i_arg);
      fprintf(fp, "%sif (argv[%d]->type != IDL_TYP_STRING)\n", bxis(indent), i_arg);
           fprintf(fp, "%sIDL_Message(IDL_M_NAMED_GENERIC, IDL_MSG_LONGJMP, \"ERROR: %s must be of type string\");\n", bxis(indent + 1), argument->name);
-     fprintf(fp, "%sif ((r = %s(IDL_STRING_STR(&argv[%d]->value.str))) < 0)\n", bxis(indent), argument->enum_name_to_value, i_arg);
+     fprintf(fp, "%sif ((r = %s(IDL_STRING_STR(&argv[%d]->value.str))) == -1)\n", bxis(indent), argument->enum_name_to_value, i_arg);
           fprintf(fp, "%sIDL_Message(IDL_M_NAMED_GENERIC, IDL_MSG_LONGJMP, \"ERROR: %s()\");\n", bxis(indent + 1), argument->enum_name_to_value);
      fprintf(fp, "%s%s = r;\n", bxis(indent), argument->name);
 
@@ -304,7 +304,7 @@ static int write_parse_argument_enum_array(FILE *fp, int indent, int i_arg,
      fprintf(fp, "%sn_%s = argv[%d]->value.arr->n_elts;\n", bxis(indent), argument->name, i_arg);
      fprintf(fp, "%s%s = malloc(n_%s * sizeof(int));\n", bxis(indent), argument->name, argument->name);
      fprintf(fp, "%sfor (i = 0; i < argv[%d]->value.arr->n_elts; ++i) {\n", bxis(indent), i_arg);
-          fprintf(fp, "%sif ((r = %s(((IDL_STRING *) argv[%d]->value.arr->data)[i].s)) < 0)\n", bxis(indent + 1), argument->enum_name_to_value, i_arg);
+          fprintf(fp, "%sif ((r = %s(((IDL_STRING *) argv[%d]->value.arr->data)[i].s)) == -1)\n", bxis(indent + 1), argument->enum_name_to_value, i_arg);
                fprintf(fp, "%sIDL_Message(IDL_M_NAMED_GENERIC, IDL_MSG_LONGJMP, \"ERROR: %s()\");\n", bxis(indent + 2), argument->enum_name_to_value);
           fprintf(fp, "%s%s[i] = r;\n", bxis(indent + 1), argument->name);
      fprintf(fp, "%s}}\n", bxis(indent));
