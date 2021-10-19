@@ -31,7 +31,7 @@ void comment(locus_data *locus);
 [ \t]+					;
 
 "/*"					{ comment(locus); }
-"//"[^\n]*              		{ /* consume //-comment */ }
+"//"[^\n]*				{ /* consume //-comment */ }
 
 
 ,					{ return ','; }
@@ -104,21 +104,21 @@ char *get_yytext() {
 
 
 void comment(locus_data *locus) {
-	char c, prev = 0;
+     char c, prev = 0;
 #ifdef __cplusplus
-	while ((c = yyinput()) != 0)      /* (EOF maps to 0) */
+     while ((c = yyinput()) != 0) /* (EOF maps to 0) */
 #else
-	while ((c =   input()) != 0)      /* (EOF maps to 0) */
+     while ((c =   input()) != 0) /* (EOF maps to 0) */
 #endif
-	{
-		if (c == '/' && prev == '*')
-			return;
-                else
-                if (c == '\n')
-                     locus->line++;
-		prev = c;
-	}
-	parse_error(locus, "unterminated comment");
+     {
+          if (c == '/' && prev == '*')
+               return;
+          else
+          if (c == '\n')
+               locus->line++;
+          prev = c;
+     }
+     parse_error(locus, "unterminated comment");
 }
 
 
