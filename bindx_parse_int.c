@@ -387,8 +387,6 @@ static subprogram_data *parse_subprogram(locus_data *locus)
 
      argument_data *argument;
 
-     lex_type_data lex_type;
-
      subprogram_data *subprogram;
 
      subprogram = malloc(sizeof(subprogram_data));
@@ -955,6 +953,8 @@ static int write_options(FILE *fp, const option_data *d, int flag)
                     break;
           }
      }
+
+     return 0;
 }
 
 
@@ -964,11 +964,6 @@ static int write_options(FILE *fp, const option_data *d, int flag)
  ******************************************************************************/
 static int write_argument(FILE *fp, const argument_data *d)
 {
-     int i;
-     int n;
-
-     long options[N_SUBPROGRAM_ARGUMENT_OPTIONS];
-
      write_type(fp, &d->type);
      fprintf(fp, " ");
 

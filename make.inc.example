@@ -1,5 +1,5 @@
 # C compiler and C compiler flags
 CC      = gcc
-CCFLAGS = -O2
+CCFLAGS = -O2 -Wall -Werror -Wno-uninitialized -Wno-unused-function
 
 LINKS = -lm
