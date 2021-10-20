@@ -325,7 +325,7 @@ static int write_subprograms(FILE *fp, const bindx_data *d,
           temp[0] = '\0';
           list_for_each(subprogram->args, argument) {
                if (argument->type.rank == 0 ||
-                   argument->options & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_ARRAY) {
+                   argument->options.flags & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_ARRAY) {
                     fprintf(fp, "%s", bxis(indent));
                     bindx_write_c_declaration(fp, d, &argument->type, NULL);
                     fprintf(fp, "%s;\n", argument->name);
@@ -335,8 +335,8 @@ static int write_subprograms(FILE *fp, const bindx_data *d,
                    argument->type.type == LEX_BINDX_TYPE_ENUM)
                     fprintf(fp, "%sconst char *%s_string = NULL;\n", bxis(indent), argument->name);
                else
-               if (argument->options & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_MASK ||
-                   argument->options & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_ARRAY)
+               if (argument->options.flags & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_MASK ||
+                   argument->options.flags & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_ARRAY)
                     fprintf(fp, "%sPyObject *%s_list;\n", bxis(indent), argument->name);
                else
                if (argument->type.rank > 0 &&
@@ -363,12 +363,12 @@ static int write_subprograms(FILE *fp, const bindx_data *d,
                if (argument->usage != LEX_SUBPROGRAM_ARGUMENT_USAGE_IN)
                     continue;
 
-               if (argument->options & SUBPROGRAM_ARGUMENT_OPTION_MASK_LIST_SIZE)
+               if (argument->options.flags & SUBPROGRAM_ARGUMENT_OPTION_MASK_LIST_SIZE)
                     continue;
 
                format = type_to_py_format(&argument->type,
-                                          argument->options & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_MASK,
-                                          argument->options & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_ARRAY);
+                                          argument->options.flags & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_MASK,
+                                          argument->options.flags & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_ARRAY);
                strcat(temp, format);
           }
 
@@ -377,15 +377,15 @@ static int write_subprograms(FILE *fp, const bindx_data *d,
                list_for_each(subprogram->args, argument) {
                     if (argument->usage != LEX_SUBPROGRAM_ARGUMENT_USAGE_IN)
                          continue;
-                    if (argument->options & SUBPROGRAM_ARGUMENT_OPTION_MASK_LIST_SIZE)
+                    if (argument->options.flags & SUBPROGRAM_ARGUMENT_OPTION_MASK_LIST_SIZE)
                          continue;
 
                     fprintf(fp, ", &%s", argument->name);
                     if (argument->type.rank == 0 && argument->type.type == LEX_BINDX_TYPE_ENUM)
                          fprintf(fp, "_string");
                     else
-                    if (argument->options & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_MASK ||
-                        argument->options & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_ARRAY)
+                    if (argument->options.flags & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_MASK ||
+                        argument->options.flags & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_ARRAY)
                          fprintf(fp, "_list");
                     else
                     if (argument->type.rank > 0)
@@ -400,26 +400,26 @@ static int write_subprograms(FILE *fp, const bindx_data *d,
 
           list_for_each(subprogram->args, argument) {
                if (argument->type.rank == 0 && argument->type.type == LEX_BINDX_TYPE_ENUM) {
-                    fprintf(fp, "%s%s = %s(%s_string);\n", bxis(indent), argument->name, argument->enum_name_to_value, argument->name);
+                    fprintf(fp, "%s%s = %s(%s_string);\n", bxis(indent), argument->name, argument->options.enum_name_to_value, argument->name);
                     fprintf(fp, "%sif ((int) %s < 0) {\n", bxis(indent), argument->name);
                     indent++;
-                    fprintf(fp, "%sPyErr_SetString(%sError, \"ERROR: %s()\");\n", bxis(indent), d->PREFIX, argument->enum_name_to_value);
+                    fprintf(fp, "%sPyErr_SetString(%sError, \"ERROR: %s()\");\n", bxis(indent), d->PREFIX, argument->options.enum_name_to_value);
                     fprintf(fp, "%sreturn %s;\n", bxis(indent), get_error_return_value(sub_type));
                     indent--;
                     fprintf(fp, "%s}\n", bxis(indent));
                }
                else
-               if (argument->options & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_MASK) {
+               if (argument->options.flags & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_MASK) {
                     fprintf(fp, "%sif (list_to_mask(%s_list, &%s, (int (*)(const char *)) %s, \"%s\"))\n",
-                            bxis(indent), argument->name, argument->name, argument->enum_name_to_value, argument->enum_name_to_value);
+                            bxis(indent), argument->name, argument->name, argument->options.enum_name_to_value, argument->options.enum_name_to_value);
                     indent++;
                     fprintf(fp, "%sreturn %s;\n", bxis(indent), get_error_return_value(sub_type));
                     indent--;
                }
                else
-               if (argument->options & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_ARRAY) {
+               if (argument->options.flags & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_ARRAY) {
                     fprintf(fp, "%sif (list_to_array(%s_list, &n_%s, (int **) &%s, (int (*)(const char *)) %s, \"%s\"))\n",
-                            bxis(indent), argument->name, argument->name, argument->name, argument->enum_name_to_value, argument->enum_name_to_value);
+                            bxis(indent), argument->name, argument->name, argument->name, argument->options.enum_name_to_value, argument->options.enum_name_to_value);
                     indent++;
                     fprintf(fp, "%sreturn %s;\n", bxis(indent), get_error_return_value(sub_type));
                     indent--;
@@ -471,8 +471,8 @@ static int write_subprograms(FILE *fp, const bindx_data *d,
                     fprintf(fp, ") ");
                }
 
-               if (argument->options & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_MASK ||
-                   argument->options & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_ARRAY)
+               if (argument->options.flags & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_MASK ||
+                   argument->options.flags & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_ARRAY)
                     fprintf(fp,  "%s", argument->name);
                else
                if (argument->type.rank == 0  &&

@@ -221,7 +221,7 @@ static int write_idl_sysfun_defs(FILE *fp, const bindx_data *d,
           strtoupper(subprogram->name, NAME_);
           count = 1;
           list_for_each(subprogram->args, argument) {
-               if (! (argument->options & SUBPROGRAM_ARGUMENT_OPTION_MASK_LIST_SIZE))
+               if (! (argument->options.flags & SUBPROGRAM_ARGUMENT_OPTION_MASK_LIST_SIZE))
                     count++;
           }
 
@@ -252,8 +252,8 @@ static int write_parse_argument_enum_scalar(FILE *fp, int indent, int i_arg,
      fprintf(fp, "%sIDL_ENSURE_SCALAR(argv[%d]);\n", bxis(indent), i_arg);
      fprintf(fp, "%sif (argv[%d]->type != IDL_TYP_STRING)\n", bxis(indent), i_arg);
           fprintf(fp, "%sIDL_Message(IDL_M_NAMED_GENERIC, IDL_MSG_LONGJMP, \"ERROR: %s must be of type string\");\n", bxis(indent + 1), argument->name);
-     fprintf(fp, "%sif ((r = %s(IDL_STRING_STR(&argv[%d]->value.str))) == -1)\n", bxis(indent), argument->enum_name_to_value, i_arg);
-          fprintf(fp, "%sIDL_Message(IDL_M_NAMED_GENERIC, IDL_MSG_LONGJMP, \"ERROR: %s()\");\n", bxis(indent + 1), argument->enum_name_to_value);
+     fprintf(fp, "%sif ((r = %s(IDL_STRING_STR(&argv[%d]->value.str))) == -1)\n", bxis(indent), argument->options.enum_name_to_value, i_arg);
+          fprintf(fp, "%sIDL_Message(IDL_M_NAMED_GENERIC, IDL_MSG_LONGJMP, \"ERROR: %s()\");\n", bxis(indent + 1), argument->options.enum_name_to_value);
      fprintf(fp, "%s%s = r;\n", bxis(indent), argument->name);
 
      return 0;
@@ -269,8 +269,8 @@ static int write_parse_argument_enum_mask_scalar(FILE *fp, int indent, int i_arg
      fprintf(fp, "%s%s = 0;\n", bxis(indent), argument->name);
      fprintf(fp, "%sIDL_ENSURE_ARRAY(argv[%d]);\n", bxis(indent), i_arg);
      fprintf(fp, "%sfor (i = 0; i < argv[%d]->value.arr->n_elts; ++i) {\n", bxis(indent), i_arg);
-          fprintf(fp, "%sif ((r = %s(((IDL_STRING *) argv[%d]->value.arr->data)[i].s)) == -1)\n", bxis(indent + 1), argument->enum_name_to_value, i_arg);
-               fprintf(fp, "%sIDL_Message(IDL_M_NAMED_GENERIC, IDL_MSG_LONGJMP, \"ERROR: %s()\");\n", bxis(indent + 2), argument->enum_name_to_value);
+          fprintf(fp, "%sif ((r = %s(((IDL_STRING *) argv[%d]->value.arr->data)[i].s)) == -1)\n", bxis(indent + 1), argument->options.enum_name_to_value, i_arg);
+               fprintf(fp, "%sIDL_Message(IDL_M_NAMED_GENERIC, IDL_MSG_LONGJMP, \"ERROR: %s()\");\n", bxis(indent + 2), argument->options.enum_name_to_value);
           fprintf(fp, "%s%s |= r;\n", bxis(indent + 1), argument->name);
      fprintf(fp, "%s}}\n", bxis(indent));
 
@@ -304,8 +304,8 @@ static int write_parse_argument_enum_array(FILE *fp, int indent, int i_arg,
      fprintf(fp, "%sn_%s = argv[%d]->value.arr->n_elts;\n", bxis(indent), argument->name, i_arg);
      fprintf(fp, "%s%s = malloc(n_%s * sizeof(int));\n", bxis(indent), argument->name, argument->name);
      fprintf(fp, "%sfor (i = 0; i < argv[%d]->value.arr->n_elts; ++i) {\n", bxis(indent), i_arg);
-          fprintf(fp, "%sif ((r = %s(((IDL_STRING *) argv[%d]->value.arr->data)[i].s)) == -1)\n", bxis(indent + 1), argument->enum_name_to_value, i_arg);
-               fprintf(fp, "%sIDL_Message(IDL_M_NAMED_GENERIC, IDL_MSG_LONGJMP, \"ERROR: %s()\");\n", bxis(indent + 2), argument->enum_name_to_value);
+          fprintf(fp, "%sif ((r = %s(((IDL_STRING *) argv[%d]->value.arr->data)[i].s)) == -1)\n", bxis(indent + 1), argument->options.enum_name_to_value, i_arg);
+               fprintf(fp, "%sIDL_Message(IDL_M_NAMED_GENERIC, IDL_MSG_LONGJMP, \"ERROR: %s()\");\n", bxis(indent + 2), argument->options.enum_name_to_value);
           fprintf(fp, "%s%s[i] = r;\n", bxis(indent + 1), argument->name);
      fprintf(fp, "%s}}\n", bxis(indent));
 
@@ -447,14 +447,14 @@ static int write_subprograms(FILE *fp, const bindx_data *d,
 
           i = 1;
           list_for_each(subprogram->args, argument) {
-               if (argument->options & SUBPROGRAM_ARGUMENT_OPTION_MASK_LIST_SIZE)
+               if (argument->options.flags & SUBPROGRAM_ARGUMENT_OPTION_MASK_LIST_SIZE)
                     continue;
 
                if (argument->type.rank == 0) {
                     if (argument->type.type == LEX_BINDX_TYPE_ENUM)
                          write_parse_argument_enum_scalar(fp, indent, i, argument);
                     else
-                    if (argument->options & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_MASK)
+                    if (argument->options.flags & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_MASK)
                          write_parse_argument_enum_mask_scalar(fp, indent, i, argument);
                     else {
                          switch(argument->type.type) {
@@ -481,7 +481,7 @@ static int write_subprograms(FILE *fp, const bindx_data *d,
                }
                else {
                     if (argument->type.type == LEX_BINDX_TYPE_ENUM &&
-                        argument->options & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_ARRAY)
+                        argument->options.flags & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_ARRAY)
                          write_parse_argument_enum_array(fp, indent, i, argument);
                     else {
                          switch(argument->type.type) {
@@ -525,8 +525,8 @@ static int write_subprograms(FILE *fp, const bindx_data *d,
                     fprintf(fp, ") ");
                }
 
-               if (argument->options & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_MASK ||
-                   argument->options & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_ARRAY)
+               if (argument->options.flags & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_MASK ||
+                   argument->options.flags & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_ARRAY)
                     fprintf(fp,  "%s", argument->name);
                else
                if (argument->type.rank == 0  &&
@@ -552,7 +552,7 @@ static int write_subprograms(FILE *fp, const bindx_data *d,
 
           list_for_each(subprogram->args, argument) {
                if (argument->type.type == LEX_BINDX_TYPE_ENUM &&
-                   argument->options & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_ARRAY)
+                   argument->options.flags & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_ARRAY)
                     fprintf(fp, "%sfree(%s);\n", bxis(indent), argument->name);
           }
 
@@ -633,7 +633,7 @@ static int write_dlm_procedures(FILE *fp, const bindx_data *d,
           strtoupper(subprogram->name, NAME_);
           count = 1;
           list_for_each(subprogram->args, argument) {
-               if (! (argument->options & SUBPROGRAM_ARGUMENT_OPTION_MASK_LIST_SIZE))
+               if (! (argument->options.flags & SUBPROGRAM_ARGUMENT_OPTION_MASK_LIST_SIZE))
                     count++;
           }
 

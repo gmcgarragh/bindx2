@@ -297,28 +297,23 @@ static int parse_usage(locus_data *locus)
 /*******************************************************************************
  *
  ******************************************************************************/
-static argument_data *parse_argument(locus_data *locus, const char *delims, int *r)
+static option_data parse_options(locus_data *locus, const char *delims, int *r, int flag)
 {
      int i;
      int n;
-/*
-     int r;
-*/
+
      lex_type_data lex_type;
 
-     argument_data *argument;
+     option_data options;
 
-     argument = malloc(sizeof(argument_data));
+     options.flags = 0;
 
-     argument->type  = parse_type(locus);
-     argument->name  = parse_identifier(locus);
-     argument->usage = parse_usage(locus);
-
-     argument->options = 0;
-
-     argument->enum_name_to_value  = NULL;
-     argument->enum_external_type  = NULL;
-     argument->enum_external_class = NULL;
+     options.enum_external_type  = NULL;
+     options.enum_external_class = NULL;
+     options.enum_name_to_value  = NULL;
+     options.enum_index_to_mask  = NULL;
+     options.enum_index_to_name  = NULL;
+     options.enum_value_to_name  = NULL;
 
      while (1) {
           *r = yy_lex(locus, &lex_type);
@@ -331,20 +326,25 @@ static argument_data *parse_argument(locus_data *locus, const char *delims, int 
 
           switch(*r) {
                case LEX_SUBPROGRAM_ARGUMENT_OPTION_ENUM_EXTERNAL:
-                    argument->options |= SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_EXTERNAL;
-                    argument->enum_external_type  = parse_string(locus);
-                    argument->enum_external_class = parse_string(locus);
+                    options.flags |= SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_EXTERNAL;
+                    options.enum_external_type  = parse_string(locus);
+                    options.enum_external_class = parse_string(locus);
                     break;
                case LEX_SUBPROGRAM_ARGUMENT_OPTION_ENUM_MASK:
-                    argument->options |= SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_MASK;
-                    argument->enum_name_to_value = parse_identifier(locus);
+                    options.flags |= SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_MASK;
+                    if (! flag)
+                         options.enum_name_to_value = parse_identifier(locus);
+                    else {
+                         options.enum_index_to_mask = parse_identifier(locus);
+                         options.enum_index_to_name = parse_identifier(locus);
+                    }
                     break;
                case LEX_SUBPROGRAM_ARGUMENT_OPTION_ENUM_ARRAY:
-                    argument->options |= SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_ARRAY;
-                    argument->enum_name_to_value = parse_identifier(locus);
+                    options.flags |= SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_ARRAY;
+                    options.enum_name_to_value = parse_identifier(locus);
                     break;
                case LEX_SUBPROGRAM_ARGUMENT_OPTION_LIST_SIZE:
-                    argument->options |= SUBPROGRAM_ARGUMENT_OPTION_MASK_LIST_SIZE;
+                    options.flags |= SUBPROGRAM_ARGUMENT_OPTION_MASK_LIST_SIZE;
                     break;
                default:
                     parse_error(locus, "Invalid argument option: %s", get_yytext());
@@ -352,7 +352,26 @@ static argument_data *parse_argument(locus_data *locus, const char *delims, int 
           }
      }
 
-L1:  return argument;
+L1:  return options;
+}
+
+
+
+/*******************************************************************************
+ *
+ ******************************************************************************/
+static argument_data *parse_argument(locus_data *locus, const char *delims, int *r)
+{
+     argument_data *argument;
+
+     argument = malloc(sizeof(argument_data));
+
+     argument->type    = parse_type(locus);
+     argument->name    = parse_identifier(locus);
+     argument->usage   = parse_usage(locus);
+     argument->options = parse_options(locus, delims, r, 0);
+
+     return argument;
 }
 
 
@@ -363,6 +382,8 @@ L1:  return argument;
 static subprogram_data *parse_subprogram(locus_data *locus)
 {
      int r;
+
+     char *delims = ",;";
 
      argument_data *argument;
 
@@ -375,13 +396,12 @@ static subprogram_data *parse_subprogram(locus_data *locus)
      subprogram->type             = parse_type(locus);
      subprogram->name             = parse_identifier(locus);
      subprogram->has_return_value = parse_int(locus);
+     subprogram->options          = parse_options(locus, delims, &r, 1);
 
      subprogram->args = malloc(sizeof(argument_data));
      list_init(subprogram->args);
 
      subprogram->has_multi_dimen_args = 0;
-
-     r = yy_lex(locus, &lex_type);
 
      if (r == ';')
           ;
@@ -692,9 +712,9 @@ static void free_argument(argument_data *d)
                free(d->type.dimens[i]);
      }
 
-     free(d->enum_name_to_value);
-     free(d->enum_external_type);
-     free(d->enum_external_class);
+     free(d->options.enum_name_to_value);
+     free(d->options.enum_external_type);
+     free(d->options.enum_external_class);
 }
 
 
@@ -900,21 +920,15 @@ static int write_usage(FILE *fp, int usage)
 /*******************************************************************************
  *
  ******************************************************************************/
-static int write_argument(FILE *fp, const argument_data *d)
+static int write_options(FILE *fp, const option_data *d, int flag)
 {
      int i;
      int n;
 
      long options[N_SUBPROGRAM_ARGUMENT_OPTIONS];
 
-     write_type(fp, &d->type);
-     fprintf(fp, " ");
-
-     fprintf(fp, "%s ", d->name);
-     write_usage(fp, d->usage);
-
-     n = subprogram_argument_option_mask_to_value_list(d->options, options,
-                                                  N_SUBPROGRAM_ARGUMENT_OPTIONS);
+     n = subprogram_argument_option_mask_to_value_list(d->flags, options,
+                                                       N_SUBPROGRAM_ARGUMENT_OPTIONS);
 
      for (i = 0; i < n; ++i) {
           switch(options[i]) {
@@ -923,7 +937,11 @@ static int write_argument(FILE *fp, const argument_data *d)
                             d->enum_external_class);
                     break;
                case SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_MASK:
-                    fprintf(fp, " enum_mask %s", d->enum_name_to_value);
+                    if (! flag)
+                         fprintf(fp, " enum_mask %s", d->enum_name_to_value);
+                    else
+                         fprintf(fp, " enum_mask %s %s", d->enum_index_to_mask,
+                                                         d->enum_index_to_name);
                     break;
                case SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_ARRAY:
                     fprintf(fp, " enum_array %s", d->enum_name_to_value);
@@ -937,6 +955,27 @@ static int write_argument(FILE *fp, const argument_data *d)
                     break;
           }
      }
+}
+
+
+
+/*******************************************************************************
+ *
+ ******************************************************************************/
+static int write_argument(FILE *fp, const argument_data *d)
+{
+     int i;
+     int n;
+
+     long options[N_SUBPROGRAM_ARGUMENT_OPTIONS];
+
+     write_type(fp, &d->type);
+     fprintf(fp, " ");
+
+     fprintf(fp, "%s ", d->name);
+     write_usage(fp, d->usage);
+
+     write_options(fp, &d->options, 0);
 
      return 0;
 }
@@ -954,10 +993,10 @@ static int write_subprogram(FILE *fp, const subprogram_data *d, const char *tag)
 
      write_type(fp, &d->type);
      fprintf(fp, " ");
-
      fprintf(fp, "%s ", d->name);
-
      fprintf(fp, "%d", d->has_return_value);
+
+     write_options(fp, &d->options, 1);
 
      if (! list_is_empty(d->args))
           fprintf(fp, ", ");

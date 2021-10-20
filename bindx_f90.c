@@ -192,9 +192,9 @@ static int bindx_write_c_util_functions(FILE *fp, const bindx_data *d,
 
           list_for_each(subprogram->args, argument) {
                fprintf(fp, ", ");
-               if (argument->options & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_EXTERNAL)
+               if (argument->options.flags & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_EXTERNAL)
                     bindx_write_c_type(fp, d, &argument->type,
-                                       argument->enum_external_type);
+                                       argument->options.enum_external_type);
                else
                     bindx_write_c_type(fp, d, &argument->type, NULL);
                fprintf(fp, " ");

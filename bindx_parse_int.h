@@ -117,12 +117,24 @@ typedef struct {
      struct list_data *prev;
      struct list_data *next;
 
-     int usage;
-     type_data type;
-     int options;
+     int flags;
      char *enum_external_type;
      char *enum_external_class;
      char *enum_name_to_value;
+     char *enum_index_to_mask;
+     char *enum_index_to_name;
+     char *enum_value_to_name;
+} option_data;
+
+
+typedef struct {
+     char *name;
+     struct list_data *prev;
+     struct list_data *next;
+
+     int usage;
+     type_data type;
+     option_data options;
 } argument_data;
 
 
@@ -135,6 +147,8 @@ typedef struct {
 
      int has_return_value;
      int has_multi_dimen_args;
+
+     option_data options;
 
      int n_args;
      argument_data *args;

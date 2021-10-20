@@ -118,8 +118,8 @@ static int write_prototypes(FILE *fp, const bindx_data *d,
           }
 
           list_for_each(subprogram->args, argument) {
-               if (argument->options & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_EXTERNAL)
-                    write_type(fp, &argument->type, argument->enum_external_class);
+               if (argument->options.flags & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_EXTERNAL)
+                    write_type(fp, &argument->type, argument->options.enum_external_class);
                else
                     write_type(fp, &argument->type, NULL);
                fprintf(fp, " ");
@@ -165,8 +165,8 @@ static int write_subprograms(FILE *fp, const bindx_data *d,
           }
 
           list_for_each(subprogram->args, argument) {
-               if (argument->options & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_EXTERNAL)
-                    write_type(fp, &argument->type, argument->enum_external_class);
+               if (argument->options.flags & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_EXTERNAL)
+                    write_type(fp, &argument->type, argument->options.enum_external_class);
                else
                     write_type(fp, &argument->type, name);
                fprintf(fp, " ");
@@ -190,8 +190,8 @@ static int write_subprograms(FILE *fp, const bindx_data *d,
           list_for_each(subprogram->args, argument) {
                fprintf(fp, ", ");
                if (argument->type.type == LEX_BINDX_TYPE_ENUM) {
-                    if (argument->options & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_EXTERNAL)
-                         fprintf(fp, "(enum %s_%s", argument->enum_external_type,
+                    if (argument->options.flags & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_EXTERNAL)
+                         fprintf(fp, "(enum %s_%s", argument->options.enum_external_type,
                                                     argument->type.name);
                     else
                          fprintf(fp, "(enum %s_%s", d->prefix, argument->type.name);

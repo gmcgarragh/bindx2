@@ -90,8 +90,8 @@ static int bindx_write_c_util_functions(FILE *fp, const bindx_data *d,
 
           list_for_each(subprogram->args, argument) {
                fprintf(fp, ", ");
-               if (argument->options & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_EXTERNAL)
-                    bindx_write_c_type(fp, d, &argument->type, argument->enum_external_type);
+               if (argument->options.flags & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_EXTERNAL)
+                    bindx_write_c_type(fp, d, &argument->type, argument->options.enum_external_type);
                else
                     bindx_write_c_type(fp, d, &argument->type, NULL);
                fprintf(fp, " ");
@@ -109,9 +109,9 @@ static int bindx_write_c_util_functions(FILE *fp, const bindx_data *d,
                if ((argument->usage == LEX_SUBPROGRAM_ARGUMENT_USAGE_IN &&
                     argument->type.rank == 0) || argument->type.rank  > 1) {
                     fprintf(fp, "%s", indent);
-                    if (argument->options & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_EXTERNAL)
+                    if (argument->options.flags & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_EXTERNAL)
                          bindx_write_c_type(fp, d, &argument->type,
-                                            argument->enum_external_type);
+                                            argument->options.enum_external_type);
                     else
                          bindx_write_c_type(fp, d, &argument->type, NULL);
                     fprintf(fp, " ");
@@ -153,8 +153,8 @@ static int bindx_write_c_util_functions(FILE *fp, const bindx_data *d,
           list_for_each(subprogram->args, argument) {
                fprintf(fp, ", ");
                if (argument->type.type == LEX_BINDX_TYPE_ENUM) {
-                    if (argument->options & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_EXTERNAL)
-                         fprintf(fp, "(enum %s_%s", argument->enum_external_type,
+                    if (argument->options.flags & SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_EXTERNAL)
+                         fprintf(fp, "(enum %s_%s", argument->options.enum_external_type,
                                  argument->type.name);
                     else
                          fprintf(fp, "(enum %s_%s", d->prefix, argument->type.name);
