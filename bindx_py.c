@@ -488,7 +488,7 @@ static int write_subprograms(FILE *fp, const bindx_data *d,
 
           fprintf(fp, ");\n");
 
-          fprintf(fp, "%sif (%s) {\n", bxis(indent), xrtm_error_conditional(subprogram->type.type));
+          fprintf(fp, "%sif (r == %s) {\n", bxis(indent), bindx_c_error_conditional(d, subprogram->type.type));
           indent++;
           fprintf(fp, "%sPyErr_SetString(%sError, \"ERROR: %s_%s()\");\n", bxis(indent), d->PREFIX, d->prefix, subprogram->name);
           fprintf(fp, "%sreturn %s;\n", bxis(indent), get_error_return_value(sub_type));

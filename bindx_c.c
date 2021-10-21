@@ -35,6 +35,24 @@ size_t bindx_c_type_size(const type_data *type)
 }
 
 
+
+const char *bindx_c_error_conditional(const bindx_data *d, int lex_bindx_type)
+{
+     switch(lex_bindx_type) {
+          case LEX_BINDX_TYPE_ENUM:
+               return d->errors.err_ret_int;
+          case LEX_BINDX_TYPE_INT:
+               return d->errors.err_ret_int;
+          case LEX_BINDX_TYPE_DOUBLE:
+               return d->errors.err_ret_dbl;
+          default:
+               INTERNAL_ERROR("Invalid lex_bindx_type value: %d", lex_bindx_type);
+               return NULL;
+     }
+}
+
+
+
 int bindx_write_c_header(FILE *fp)
 {
      fprintf(fp, "/*******************************************************************************\n");

@@ -205,8 +205,8 @@ static int write_subprograms(FILE *fp, const bindx_data *d,
 
           fprintf(fp, ");\n");
 
-          fprintf(fp, "%sif (%s)\n", bxis(indent),
-                  xrtm_error_conditional(subprogram->type.type));
+          fprintf(fp, "%sif (r == %s)\n", bxis(indent),
+                  bindx_c_error_conditional(d, subprogram->type.type));
           indent++;
           fprintf(fp, "%sthrow %s::ERROR;\n", bxis(indent), name);
           indent--;

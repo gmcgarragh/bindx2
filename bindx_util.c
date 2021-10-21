@@ -82,26 +82,6 @@ void ifprintf(FILE *fp, int n_indent, const char *fmt, ...)
 /*******************************************************************************
  *
  ******************************************************************************/
-const char *xrtm_error_conditional(int lex_bindx_type)
-{
-     switch(lex_bindx_type) {
-          case LEX_BINDX_TYPE_ENUM:
-               return "(int) r == XRTM_INT_ERROR";
-          case LEX_BINDX_TYPE_INT:
-               return "r == XRTM_INT_ERROR";
-          case LEX_BINDX_TYPE_DOUBLE:
-               return "r == XRTM_DBL_ERROR";
-          default:
-               INTERNAL_ERROR("Invalid lex_bindx_type value: %d", lex_bindx_type);
-               return NULL;
-     }
-}
-
-
-
-/*******************************************************************************
- *
- ******************************************************************************/
 static char *write_string_trunc(FILE *fp, char *s, int n, char *prefix)
 {
      int i;

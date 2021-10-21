@@ -1,5 +1,6 @@
 /* bindx_c.c */
 size_t bindx_c_type_size(const type_data *type);
+const char *bindx_c_error_conditional(const bindx_data *d, int lex_bindx_type);
 int bindx_write_c_header(FILE *fp);
 int bindx_write_c_header_top(FILE *fp);
 int bindx_write_c_type(FILE *fp, const bindx_data *d, const type_data *type, const char *prefix);

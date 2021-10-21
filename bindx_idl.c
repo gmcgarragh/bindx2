@@ -547,7 +547,7 @@ static int write_subprograms(FILE *fp, const bindx_data *d,
                     fprintf(fp, "%sfree_array((void *) %s, %d);\n", bxis(indent), argument->name, argument->type.rank);
           }
 
-          fprintf(fp, "%sif (%s)\n", bxis(indent), xrtm_error_conditional(subprogram->type.type));
+          fprintf(fp, "%sif (r == %s)\n", bxis(indent), bindx_c_error_conditional(d, subprogram->type.type));
           fprintf(fp, "%sIDL_Message(IDL_M_NAMED_GENERIC, IDL_MSG_LONGJMP, \"ERROR: %s_%s()\");\n", bxis(indent + 1), d->prefix, subprogram->name);
 
           list_for_each(subprogram->args, argument) {
@@ -569,7 +569,7 @@ static int write_subprograms(FILE *fp, const bindx_data *d,
                               fprintf(fp, "%svar.type = %s;\n", bxis(indent), get_idl_type(&argument->type));
                               fprintf(fp, "%svar.flags = 0;\n", bxis(indent));
                               fprintf(fp, "%svar.value.%s = r;\n", bxis(indent), get_idl_value_var(&argument->type));
-                              fprintf(fp, "%sif (var.value.d == XRTM_DBL_ERROR)\n", bxis(indent));
+                              fprintf(fp, "%sif (var.value.d == %s)\n", bxis(indent), d->errors.err_ret_dbl);
                                    fprintf(fp, "%sIDL_Message(IDL_M_NAMED_GENERIC, IDL_MSG_LONGJMP, \"ERROR: %s_%s()\");\n", bxis(indent), d->prefix, subprogram->name);
                               fprintf(fp, "%sIDL_VarCopy((IDL_VPTR) &var, argv[%d]);\n", bxis(indent), i);
                          }
@@ -593,7 +593,7 @@ static int write_subprograms(FILE *fp, const bindx_data *d,
                     fprintf(fp, "%svar.type = %s;\n", bxis(indent), get_idl_type(&subprogram->type));
                     fprintf(fp, "%svar.flags = 0;\n", bxis(indent));
                     fprintf(fp, "%svar.value.%s = r;\n", bxis(indent), get_idl_value_var(&subprogram->type));
-                    fprintf(fp, "%sif (var.value.d == XRTM_DBL_ERROR)\n", bxis(indent));
+                    fprintf(fp, "%sif (var.value.d == %s)\n", bxis(indent), d->errors.err_ret_dbl);
                          fprintf(fp, "%sIDL_Message(IDL_M_NAMED_GENERIC, IDL_MSG_LONGJMP, \"ERROR: %s_%s()\");\n", bxis(indent), d->prefix, subprogram->name);
                     fprintf(fp, "%sIDL_VarCopy((IDL_VPTR) &var, argv[%d]);\n", bxis(indent), i);
                }
