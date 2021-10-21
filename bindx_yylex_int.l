@@ -48,6 +48,7 @@ void comment(locus_data *locus);
 "include"				{ return LEX_ITEM_INCLUDE; }
 "enumeration"				{ return LEX_ITEM_ENUMERATION; }
 "global_const"				{ return LEX_ITEM_GLOBAL_CONST; }
+"err_ret_vals"				{ return LEX_ITEM_ERR_RET_VALS; }
 "structure"				{ return LEX_ITEM_STRUCTURE; }
 "subprogram_general"			{ return LEX_ITEM_SUBPROGRAM_GENERAL; }
 "subprogram_init"			{ return LEX_ITEM_SUBPROGRAM_INIT; }

@@ -28,6 +28,7 @@ enum lex_item {
      LEX_ITEM_INCLUDE,
      LEX_ITEM_ENUMERATION,
      LEX_ITEM_GLOBAL_CONST,
+     LEX_ITEM_ERR_RET_VALS,
      LEX_ITEM_STRUCTURE,
      LEX_ITEM_SUBPROGRAM_GENERAL,
      LEX_ITEM_SUBPROGRAM_INIT,
@@ -104,6 +105,12 @@ typedef struct {
 
 
 typedef struct {
+     char *err_ret_int;
+     char *err_ret_dbl;
+} err_ret_val_data;
+
+
+typedef struct {
      char *name;
      struct list_data *prev;
      struct list_data *next;
@@ -161,6 +168,7 @@ typedef struct {
      char *PREFIX;
      enumeration_data enums;
      global_const_data consts;
+     err_ret_val_data errors;
      structure_data structs;
      subprogram_data subs_all;
      subprogram_data subs_general;

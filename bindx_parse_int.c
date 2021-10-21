@@ -252,6 +252,23 @@ static global_const_data *parse_global_const(locus_data *locus)
 /*******************************************************************************
  *
  ******************************************************************************/
+static err_ret_val_data parse_err_ret_vals(locus_data *locus)
+{
+     err_ret_val_data err_ret_val;
+
+     err_ret_val.err_ret_int = parse_identifier(locus);
+     err_ret_val.err_ret_dbl = parse_identifier(locus);
+
+     parse_char(locus, ';');
+
+     return err_ret_val;
+}
+
+
+
+/*******************************************************************************
+ *
+ ******************************************************************************/
 static structure_data *parse_structure(locus_data *locus)
 {
      structure_data *structure;
@@ -522,6 +539,7 @@ void bindx_init(bindx_data *d)
 
      list_init(&d->enums);
      list_init(&d->consts);
+     list_init(&d->errors);
      list_init(&d->structs);
      list_init(&d->subs_all);
      list_init(&d->subs_general);
@@ -566,6 +584,9 @@ void bindx_parse(bindx_data *d, locus_data *locus)
                     global_const = parse_global_const(locus);
                     if (list_append(&d->consts, global_const, 1) == NULL)
                          parse_error(locus, "duplicate global_const name: %s", global_const->name);
+                    break;
+               case LEX_ITEM_ERR_RET_VALS:
+                    d->errors = parse_err_ret_vals(locus);
                     break;
                case LEX_ITEM_STRUCTURE:
                     structure = parse_structure(locus);
@@ -855,6 +876,18 @@ static int write_enumeration(FILE *fp, const enumeration_data *d)
 /*******************************************************************************
  *
  ******************************************************************************/
+static int write_err_ret_vals(FILE *fp, const err_ret_val_data *d)
+{
+     fprintf(fp, "err_ret_vals %s %s;", d->err_ret_int, d->err_ret_dbl);
+
+     return 0;
+}
+
+
+
+/*******************************************************************************
+ *
+ ******************************************************************************/
 static int write_global_const(FILE *fp, const global_const_data *d)
 {
      fprintf(fp, "global_const ");
@@ -1032,6 +1065,10 @@ int bindx_write(FILE *fp, const bindx_data *d)
           write_global_const(fp, global_const);
           fprintf(fp, "\n");
      }
+
+     write_err_ret_vals(fp, &d->errors);
+     fprintf(fp, "\n");
+     fprintf(fp, "\n");
 
      list_for_each(&d->structs, structure) {
           write_structure(fp, structure);
