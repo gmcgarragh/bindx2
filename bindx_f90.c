@@ -38,8 +38,27 @@ static int write_header_top(FILE *fp)
 
 
 
+static char *crap_data_type_replace(const char *s)
+{
+     char *p;
+     char *s2;
+
+     s2 = strdup(s);
+     p = strstr(s2, "_data");
+     if (p != NULL) {
+          strcpy(p, "_type");
+     }
+
+     return s2;
+}
+
+
+
+
 static int write_type(FILE *fp, const type_data *d)
 {
+     char *crap;
+
      switch(d->type) {
           case LEX_BINDX_TYPE_ENUM:
                fprintf(fp, "integer");
@@ -54,10 +73,9 @@ static int write_type(FILE *fp, const type_data *d)
                fprintf(fp, "real(8)");
                break;
           case LEX_BINDX_TYPE_STRUCTURE:
-               if (strcmp(d->name, "xrtm_data") == 0)
-                    fprintf(fp, "type(xrtm_type)");
-               else
-                    fprintf(fp, "type(%s)", d->name);
+               crap = crap_data_type_replace(d->name);
+               fprintf(fp, "type(%s)", crap);
+               free(crap);
                break;
           default:
                INTERNAL_ERROR("Invalid lex_bindx_type value: %d", d->type);
@@ -71,6 +89,8 @@ static int write_type(FILE *fp, const type_data *d)
 
 static int write_type_bind_c(FILE *fp, const type_data *d)
 {
+     char *crap;
+
      switch(d->type) {
           case LEX_BINDX_TYPE_ENUM:
                fprintf(fp, "integer(c_int)");
@@ -85,10 +105,9 @@ static int write_type_bind_c(FILE *fp, const type_data *d)
                fprintf(fp, "real(c_double)");
                break;
           case LEX_BINDX_TYPE_STRUCTURE:
-               if (strcmp(d->name, "xrtm_data") == 0)
-                    fprintf(fp, "type(xrtm_type)");
-               else
-                    fprintf(fp, "type(%s)", d->name);
+               crap = crap_data_type_replace(d->name);
+               fprintf(fp, "type(%s)", crap);
+               free(crap);
                break;
           default:
                INTERNAL_ERROR("Invalid lex_bindx_type value: %d", d->type);
