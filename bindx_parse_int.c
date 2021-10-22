@@ -358,7 +358,10 @@ static option_data parse_options(locus_data *locus, const char *delims, int *r, 
                     break;
                case LEX_SUBPROGRAM_ARGUMENT_OPTION_ENUM_ARRAY:
                     options.flags |= SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_ARRAY;
-                    options.enum_name_to_value = parse_identifier(locus);
+                    if (! flag)
+                         options.enum_name_to_value = parse_identifier(locus);
+                    else
+                         options.enum_value_to_name = parse_identifier(locus);
                     break;
                case LEX_SUBPROGRAM_ARGUMENT_OPTION_LIST_SIZE:
                     options.flags |= SUBPROGRAM_ARGUMENT_OPTION_MASK_LIST_SIZE;
@@ -975,7 +978,10 @@ static int write_options(FILE *fp, const option_data *d, int flag)
                                                          d->enum_index_to_name);
                     break;
                case SUBPROGRAM_ARGUMENT_OPTION_MASK_ENUM_ARRAY:
-                    fprintf(fp, " enum_array %s", d->enum_name_to_value);
+                    if (! flag)
+                        fprintf(fp, " enum_array %s", d->enum_name_to_value);
+                    else
+                        fprintf(fp, " enum_array %s", d->enum_value_to_name);
                     break;
                case SUBPROGRAM_ARGUMENT_OPTION_MASK_LIST_SIZE:
                     fprintf(fp, " list_size");
