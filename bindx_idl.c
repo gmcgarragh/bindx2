@@ -355,9 +355,9 @@ static int write_parse_argument_number_array(FILE *fp, const bindx_data *d,
 
           for (j = 0; j < argument->type.rank; ++j)
                fprintf(fp, "(%s) * ", argument->type.dimens[j]);
-               fprintf(fp, "sizeof(");
-               bindx_write_c_type(fp, d, &argument->type, NULL);
-               fprintf(fp, "));\n");
+          fprintf(fp, "sizeof(");
+          bindx_write_c_type(fp, d, &argument->type, NULL);
+          fprintf(fp, "));\n");
 
           if (argument->type.rank > 1) {
                for (j = 0; j < argument->type.rank; ++j)
