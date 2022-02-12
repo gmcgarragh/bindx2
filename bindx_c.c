@@ -76,6 +76,34 @@ int bindx_write_c_header_top(FILE *fp)
 
 
 
+int bindx_write_c_util_header(FILE *fp, const bindx_data *d)
+{
+     fprintf(fp, "#include <gutil.h>\n");
+     fprintf(fp, "\n");
+     fprintf(fp, "#include <%s_interface.h>\n", d->prefix);
+     fprintf(fp, "\n");
+     fprintf(fp, "#ifdef __cplusplus\n");
+     fprintf(fp, "extern \"C\" {\n");
+     fprintf(fp, "#endif\n");
+     fprintf(fp, "\n");
+     fprintf(fp, "\n");
+
+     return 0;
+}
+
+
+
+int bindx_write_c_util_trailer(FILE *fp, const bindx_data *d)
+{
+     fprintf(fp, "#ifdef __cplusplus\n");
+     fprintf(fp, "}\n");
+     fprintf(fp, "#endif\n");
+
+     return 0;
+}
+
+
+
 int bindx_write_c_type(FILE *fp, const bindx_data *d, const type_data *type,
                        const char *prefix)
 {
