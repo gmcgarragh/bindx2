@@ -51,7 +51,6 @@ char *bindx_indent_str(int n)
                return "                                             ";
           default:
                INTERNAL_ERROR("Invalid indent length: %d", n);
-               return "                                                  ";
      }
 
      return "";
