@@ -39,6 +39,8 @@ int list_count(const void *v);
 int list_is_first_elem(const void *v1, const void *v2);
 int list_is_last_elem(const void *v1, const void *v2);
 void *list_last_elem(const void *v1);
+void *list_prev_elem(const void *v1);
+void *list_next_elem(const void *v1);
 void list_insert(void *v1, void *v2);
 void *list_find(const void *v, const char *name);
 void *list_append(void *v1, void *v2, int flag);

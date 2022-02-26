@@ -95,6 +95,28 @@ void *list_last_elem(const void *v1) {
 
 
 
+void *list_prev_elem(const void *v1) {
+
+     struct list_data *elem;
+
+     elem = (struct list_data *) v1;
+
+     return elem->prev;
+}
+
+
+
+void *list_next_elem(const void *v1) {
+
+     struct list_data *elem;
+
+     elem = (struct list_data *) v1;
+
+     return elem->next;
+}
+
+
+
 void list_insert(void *v1, void *v2) {
 
      struct list_data *head;
