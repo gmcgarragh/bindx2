@@ -29,6 +29,6 @@ Sorry but there is no documentation yet.  I will try to do this soon.  Take a lo
 
 CONTACT
 -------
-For questions, comments, or bug reports contact Greg McGarragh at mcgarragh@atm.ox.ac.uk.
+For questions, comments, or bug reports contact Greg McGarragh at greg.mcgarragh@colostate.edu.
 
 Bug reports are greatly appreciated!  If you would like to report a bug please include the interface defintion file that reproduces the bug.

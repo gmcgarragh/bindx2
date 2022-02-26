@@ -47,7 +47,7 @@ included with XRTM ad compare it to the actual XRTM C interface.
 CONTACT
 -------
 For questions, comments, or bug reports contact Greg McGarragh at
-mcgarragh@atm.ox.ac.uk.
+greg.mcgarragh@colostate.edu.
 
 Bug reports are greatly appreciated!  If you would like to report a bug please
 include the interface defintion file that reproduces the bug.
