@@ -26,7 +26,39 @@ const char *bindx_version()
 /*******************************************************************************
  *
  ******************************************************************************/
-char *bindx_indent_str(int n)
+static char *bindx_indent_str4(int n)
+{
+     switch (n) {
+          case 0:
+               return "";
+          case 1:
+               return "    ";
+          case 2:
+               return "        ";
+          case 3:
+               return "            ";
+          case 4:
+               return "                ";
+          case 5:
+               return "                    ";
+          case 6:
+               return "                        ";
+          case 7:
+               return "                            ";
+          case 8:
+               return "                                ";
+          case 9:
+               return "                                    ";
+          default:
+               INTERNAL_ERROR("Invalid indent length: %d", n);
+     }
+
+     return "";
+}
+
+char *bxis4(int n) { return bindx_indent_str4(n); }
+
+static char *bindx_indent_str5(int n)
 {
      switch (n) {
           case 0:
@@ -57,7 +89,9 @@ char *bindx_indent_str(int n)
 }
 
 
-char *bxis(int n) { return bindx_indent_str(n); }
+char *bxis5(int n) { return bindx_indent_str5(n); }
+
+char *bxis (int n) { return bindx_indent_str5(n); }
 
 
 
@@ -68,7 +102,7 @@ void ifprintf(FILE *fp, int n_indent, const char *fmt, ...)
 {
      va_list ap;
 
-     fprintf(fp, "%s", bindx_indent_str(n_indent));
+     fprintf(fp, "%s", bindx_indent_str5(n_indent));
 
      va_start(ap, fmt);
 

@@ -15,6 +15,7 @@
 #include "bindx_f90.h"
 #include "bindx_f77.h"
 #include "bindx_idl.h"
+#include "bindx_jl.h"
 #include "bindx_py.h"
 #include "bindx_parse_int.h"
 #include "bindx_yylex_int.h"
@@ -38,6 +39,7 @@ typedef struct {
      int f77;
      int f90;
      int idl;
+     int jl;
      int py;
      int help;
      int version;
@@ -56,6 +58,7 @@ int main(int argc, char *argv[]) {
      char *name_f77;
      char *name_f90;
      char *name_idl;
+     char *name_jl;
      char *name_py;
 
      char *in_files_def[MAX_IN_FILES];
@@ -66,6 +69,7 @@ int main(int argc, char *argv[]) {
      char *out_files_f77[MAX_OUT_FILES];
      char *out_files_f90[MAX_OUT_FILES];
      char *out_files_idl[MAX_OUT_FILES];
+     char *out_files_jl[MAX_OUT_FILES];
      char *out_files_py[MAX_OUT_FILES];
 
      int i;
@@ -77,6 +81,7 @@ int main(int argc, char *argv[]) {
      int n_out_files_f77;
      int n_out_files_f90;
      int n_out_files_idl;
+     int n_out_files_jl;
      int n_out_files_py;
 
      FILE *fp;
@@ -97,6 +102,7 @@ int main(int argc, char *argv[]) {
      options.f77     = 0;
      options.f90     = 0;
      options.idl     = 0;
+     options.jl      = 0;
      options.py      = 0;
      options.help    = 0;
      options.version = 0;
@@ -148,14 +154,22 @@ int main(int argc, char *argv[]) {
                     out_files_idl[0] = argv[++i];
                     out_files_idl[1] = argv[++i];
                }
-                else if (strcmp(argv[i], "-py") == 0) {
+               else if (strcmp(argv[i], "-jl") == 0) {
+                    check_arg_count(i, argc, 3, argv[i]);
+                    options.jl = 1;
+                    name_jl = argv[++i];
+                    n_out_files_jl = 2;
+                    out_files_jl[0] = argv[++i];
+                    out_files_jl[1] = argv[++i];
+               }
+               else if (strcmp(argv[i], "-py") == 0) {
                     check_arg_count(i, argc, 2, argv[i]);
                     options.py = 1;
                     name_py = argv[++i];
                     n_out_files_py = 1;
                     out_files_py[0] = argv[++i];
                }
-              else if (strcmp(argv[i], "-help") == 0) {
+               else if (strcmp(argv[i], "-help") == 0) {
                     usage();
                     exit(0);
                }
@@ -237,7 +251,7 @@ int main(int argc, char *argv[]) {
       *-----------------------------------------------------------------------*/
      if (options.cpp) {
           if (bindx_write_x(&bindx_int, name_cpp, n_out_files_cpp, out_files_cpp,
-              bindx_write_cpp)) {
+                            bindx_write_cpp)) {
               fprintf(stderr, "ERROR: bindx_write_x()\n");
               return -1;
           }
@@ -245,7 +259,7 @@ int main(int argc, char *argv[]) {
 
      if (options.f77) {
           if (bindx_write_x(&bindx_int, name_f77, n_out_files_f77, out_files_f77,
-              bindx_write_f77)) {
+                            bindx_write_f77)) {
               fprintf(stderr, "ERROR: bindx_write_x()\n");
               return -1;
           }
@@ -253,7 +267,7 @@ int main(int argc, char *argv[]) {
 
      if (options.f90) {
           if (bindx_write_x(&bindx_int, name_f90, n_out_files_f90, out_files_f90,
-              bindx_write_f90)) {
+                             bindx_write_f90)) {
               fprintf(stderr, "ERROR: bindx_write_x()\n");
               return -1;
           }
@@ -261,7 +275,15 @@ int main(int argc, char *argv[]) {
 
      if (options.idl) {
           if (bindx_write_x(&bindx_int, name_idl, n_out_files_idl, out_files_idl,
-              bindx_write_idl)) {
+                            bindx_write_idl)) {
+              fprintf(stderr, "ERROR: bindx_write_x()\n");
+              return -1;
+          }
+     }
+
+     if (options.jl) {
+          if (bindx_write_x(&bindx_int, name_jl, n_out_files_jl, out_files_jl,
+                            bindx_write_jl)) {
               fprintf(stderr, "ERROR: bindx_write_x()\n");
               return -1;
           }
@@ -269,7 +291,7 @@ int main(int argc, char *argv[]) {
 
      if (options.py) {
           if (bindx_write_x(&bindx_int, name_py, n_out_files_py, out_files_py,
-              bindx_write_py)) {
+                            bindx_write_py)) {
               fprintf(stderr, "ERROR: bindx_write_x()\n");
               return -1;
           }

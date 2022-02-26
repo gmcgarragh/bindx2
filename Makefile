@@ -20,6 +20,7 @@ OBJECTS = bindx.o \
           bindx_idl.o \
           bindx_parse.o \
           bindx_parse_int.o \
+          bindx_jl.o \
           bindx_py.o \
           bindx_util.o \
           bindx_yylex_int.o \

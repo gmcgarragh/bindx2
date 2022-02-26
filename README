@@ -1,17 +1,12 @@
 DESCRIPTION
 ------------
 bindx2 was originally developed to produce bindings to the XRTM (X Radiative
-Transfer Model) interface, written in C, for C++, Fortran 77, Fortran 90,
-Python, and IDL, based on an interface definition file.  I am making this
-available for XRTM developers and also as some people have thought it might be
-useful for other applications.  In my opinion it is not very general and is
-geared towards the object oriented interface of XRTM so I am not sure if it
-will be useful for other than XRTM.
-
-It is called bindx2 because bindx(1) was a failure.  Although containing a
-rather nice C frontend, building the bindings based on the C header files
-proved difficult at which point I opted to develop an interface definition
-language leading to bindx2.
+Transfer Model) interface, written in C, for C++, Fortran 77, Fortran 90, IDL,
+Julia, and Python, based on a common interface definition file.  I am making
+this available for XRTM developers and also as some people have thought it
+might be useful for other applications.  In my opinion it is not very general
+and is geared towards the native interface to XRTM so I am not sure if it will
+be useful for other applications.
 
 
 INSTALLATION
