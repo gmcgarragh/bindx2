@@ -3,6 +3,8 @@ size_t bindx_c_type_size(const type_data *type);
 const char *bindx_c_error_conditional(const bindx_data *d, int lex_bindx_type);
 int bindx_write_c_header(FILE *fp);
 int bindx_write_c_header_top(FILE *fp);
+int bindx_write_c_util_header(FILE *fp, const bindx_data *d);
+int bindx_write_c_util_trailer(FILE *fp, const bindx_data *d);
 int bindx_write_c_type(FILE *fp, const bindx_data *d, const type_data *type, const char *prefix);
 int bindx_write_c_dimens(FILE *fp, const bindx_data *d, const type_data *type);
 int bindx_write_c_dimens_args(FILE *fp, const bindx_data *d, const type_data *type, enum lex_subprogram_argument_usage usage);
